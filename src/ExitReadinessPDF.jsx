@@ -301,7 +301,7 @@ const ExitReadinessPDF = ({ email, score, domainData, analysis }) => {
             Get 2 growth levers and 1 red flag personalized to your company in a 30-minute session.
           </Text>
           <Text style={styles.ctaLink}>
-            https://calendly.com/legacydna/discoverycall
+            https://calendly.com/drroxietime/exit-readiness-diagnostic
           </Text>
         </View>
 
@@ -323,7 +323,7 @@ const ExitReadinessPDF = ({ email, score, domainData, analysis }) => {
           </View>
           <View>
             <Text style={styles.footerText}>www.legacy-dna.com</Text>
-            <Text style={styles.footerText}>(c) 2025 Legacy DNA. All rights reserved.</Text>
+            <Text style={styles.footerText}>(C) 2025 Legacy DNA. All rights reserved.</Text>
           </View>
         </View>
       </Page>

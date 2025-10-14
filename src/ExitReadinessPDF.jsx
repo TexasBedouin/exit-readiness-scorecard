@@ -323,7 +323,7 @@ const ExitReadinessPDF = ({ email, score, domainData, analysis }) => {
           </View>
           <View>
             <Text style={styles.footerText}>www.legacy-dna.com</Text>
-            <Text style={styles.footerText}>© 2025 Legacy DNA. All rights reserved.</Text>
+            <Text style={styles.footerText}>{'\u00A9'}2025 Legacy DNA. All rights reserved.</Text>
           </View>
         </View>
       </Page>

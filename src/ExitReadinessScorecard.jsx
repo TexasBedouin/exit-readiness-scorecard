@@ -14,6 +14,16 @@ const ExitReadinessScorecard = () => {
     marketPresence: 0
   });
   const [email, setEmail] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const questions = [
     {
@@ -169,13 +179,13 @@ const ExitReadinessScorecard = () => {
         background: 'linear-gradient(to bottom right, #eff6ff, #f3e8ff, #ecfeff)',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
       }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '48px 16px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: isMobile ? '24px 16px' : '48px 16px' }}>
+          <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '48px' }}>
             <div style={{
               display: 'inline-block',
               padding: '8px 16px',
               borderRadius: '9999px',
-              fontSize: '14px',
+              fontSize: isMobile ? '12px' : '14px',
               fontWeight: '600',
               marginBottom: '16px',
               backgroundColor: '#E2EEF2',
@@ -184,7 +194,7 @@ const ExitReadinessScorecard = () => {
               For PE-Backed & Mid-Market Healthtech CEOs
             </div>
             <h1 style={{
-              fontSize: '56px',
+              fontSize: isMobile ? '32px' : '56px',
               fontWeight: '700',
               marginBottom: '24px',
               color: '#34296A',
@@ -193,7 +203,7 @@ const ExitReadinessScorecard = () => {
               Are You Exit Ready?
             </h1>
             <p style={{
-              fontSize: '24px',
+              fontSize: isMobile ? '16px' : '24px',
               color: '#374151',
               marginBottom: '32px',
               maxWidth: '768px',
@@ -208,11 +218,11 @@ const ExitReadinessScorecard = () => {
             backgroundColor: 'white',
             borderRadius: '16px',
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            padding: '64px 96px',
+            padding: isMobile ? '24px 20px' : '64px 48px',
             marginBottom: '32px'
           }}>
             <p style={{
-              fontSize: '18px',
+              fontSize: isMobile ? '16px' : '18px',
               color: '#374151',
               marginBottom: '32px',
               lineHeight: '1.75'
@@ -222,7 +232,7 @@ const ExitReadinessScorecard = () => {
 
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
               gap: '24px',
               marginBottom: '40px'
             }}>
@@ -292,10 +302,10 @@ const ExitReadinessScorecard = () => {
                 onClick={() => setScreen('quiz')}
                 style={{
                   color: 'white',
-                  padding: '20px 40px',
+                  padding: isMobile ? '16px 24px' : '20px 40px',
                   borderRadius: '8px',
                   fontWeight: '700',
-                  fontSize: '18px',
+                  fontSize: isMobile ? '16px' : '18px',
                   backgroundColor: '#34296A',
                   border: 'none',
                   cursor: 'pointer',

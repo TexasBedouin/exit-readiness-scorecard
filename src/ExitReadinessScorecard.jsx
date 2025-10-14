@@ -548,7 +548,7 @@ const ExitReadinessScorecard = () => {
                     Get 2 growth levers and 1 red flag personalized to your company in a 30-minute session.
                   </p>
                   <a 
-                    href="https://calendly.com/legacydna/discoverycall" 
+                    href="https://calendly.com/drroxietime/exit-readiness-diagnostic" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     style={{

@@ -1,0 +1,9 @@
+{
+  "name": "exit-readiness-netlify-functions",
+  "version": "1.0.0",
+  "description": "Netlify functions for Exit Readiness Scorecard",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.478.0",
+    "node-fetch": "^2.7.0"
+  }
+}

@@ -157,6 +157,60 @@ async function uploadToR2(pdfFile, email) {
   return `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${key}`;
 }
 
+// Helper function to make HTTPS requests with custom SSL handling
+function httpsRequest(url, options, data) {
+  const https = require('https');
+  const urlParsed = new URL(url);
+  
+  return new Promise((resolve, reject) => {
+    const requestOptions = {
+      hostname: urlParsed.hostname,
+      port: 443,
+      path: urlParsed.pathname + urlParsed.search,
+      method: options.method || 'GET',
+      headers: options.headers || {},
+      rejectUnauthorized: false // Bypass SSL verification
+    };
+
+    const req = https.request(requestOptions, (res) => {
+      let body = '';
+      
+      res.on('data', (chunk) => {
+        body += chunk;
+      });
+      
+      res.on('end', () => {
+        try {
+          const jsonBody = JSON.parse(body);
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
+            json: () => Promise.resolve(jsonBody),
+            text: () => Promise.resolve(body)
+          });
+        } catch (e) {
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
+            json: () => Promise.reject(new Error('Invalid JSON')),
+            text: () => Promise.resolve(body)
+          });
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+
+    if (data) {
+      req.write(data);
+    }
+    
+    req.end();
+  });
+}
+
 // Submit to ActiveCampaign
 async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl) {
   const AC_API_KEY = process.env.ACTIVECAMPAIGN_API_KEY;
@@ -182,21 +236,17 @@ async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl)
     }
   };
 
-  // Use https module to bypass SSL issues
-  const https = require('https');
-  const agent = new https.Agent({
-    rejectUnauthorized: false
-  });
-
-  const contactResponse = await fetch(`${AC_API_URL}/api/3/contacts`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Api-Token': AC_API_KEY
+  const contactResponse = await httpsRequest(
+    `${AC_API_URL}/api/3/contacts`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Api-Token': AC_API_KEY
+      }
     },
-    body: JSON.stringify(contactPayload),
-    agent: agent
-  });
+    JSON.stringify(contactPayload)
+  );
 
   if (!contactResponse.ok) {
     const errorText = await contactResponse.text();
@@ -217,15 +267,17 @@ async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl)
     }
   };
 
-  const listResponse = await fetch(`${AC_API_URL}/api/3/contactLists`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Api-Token': AC_API_KEY
+  const listResponse = await httpsRequest(
+    `${AC_API_URL}/api/3/contactLists`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Api-Token': AC_API_KEY
+      }
     },
-    body: JSON.stringify(listPayload),
-    agent: agent
-  });
+    JSON.stringify(listPayload)
+  );
 
   if (!listResponse.ok) {
     const errorText = await listResponse.text();
@@ -243,15 +295,17 @@ async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl)
     }
   };
 
-  const tagResponse = await fetch(`${AC_API_URL}/api/3/contactTags`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Api-Token': AC_API_KEY
+  const tagResponse = await httpsRequest(
+    `${AC_API_URL}/api/3/contactTags`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Api-Token': AC_API_KEY
+      }
     },
-    body: JSON.stringify(tagPayload),
-    agent: agent
-  });
+    JSON.stringify(tagPayload)
+  );
 
   if (!tagResponse.ok) {
     const errorText = await tagResponse.text();

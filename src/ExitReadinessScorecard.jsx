@@ -55,13 +55,8 @@ const ExitReadinessScorecard = () => {
       // Generate the analysis data
       const analysis = getAnalysis();
       
-      // Extract individual domain scores
-      const domainScores = {};
-      analysis.domainData.forEach((domain) => {
-        // Convert domain names to match ActiveCampaign field expectations
-        const domainKey = domain.domain.replace(/\s+/g, '');
-        domainScores[`${domainKey.charAt(0).toLowerCase() + domainKey.slice(1)}Score`] = domain.score;
-      });
+      // Get the current page URL as the survey URL
+      const surveyUrl = window.location.origin || 'https://exit-readiness-scorecard.netlify.app';
 
       // Send to Netlify function with JSON payload
       const response = await fetch('/.netlify/functions/submit-scorecard', {
@@ -71,9 +66,8 @@ const ExitReadinessScorecard = () => {
         },
         body: JSON.stringify({
           email,
-          name: '', // You can add a name field to your form if needed
           overallScore: analysis.overallScore,
-          ...domainScores
+          surveyUrl: surveyUrl
         })
       });
 

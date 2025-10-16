@@ -1,5 +1,5 @@
-// submit-scorecard-fetch-version.js
-// This version uses native fetch instead of axios to avoid SSL/TLS handshake issues
+// submit-scorecard.js
+// Simplified version - sends only email, overall score, and survey URL
 
 exports.handler = async (event, context) => {
   // Only allow POST requests
@@ -13,36 +13,44 @@ exports.handler = async (event, context) => {
   try {
     // Parse the request body
     const data = JSON.parse(event.body);
-    console.log('Received data:', { email: data.email, score: data.overallScore });
+    console.log('Received data:', { 
+      email: data.email, 
+      overallScore: data.overallScore,
+      surveyUrl: data.surveyUrl 
+    });
     
     // Your ActiveCampaign configuration
-    const AC_API_URL = process.env.AC_API_URL || 'https://legacydna.api-us1.com';
+    const AC_API_URL = process.env.AC_API_URL || 'https://legacy-dna33050.api-us1.com';
     const AC_API_TOKEN = process.env.AC_API_TOKEN;
-    const AC_LIST_ID = process.env.AC_LIST_ID || '17';
+    const AC_LIST_ID = process.env.AC_LIST_ID || '13';
     
     if (!AC_API_TOKEN) {
       throw new Error('ActiveCampaign API token not configured');
+    }
+
+    // Build field values array - ONLY Overall Score and Survey URL
+    const fieldValues = [
+      { field: '20', value: String(data.overallScore) }  // Overall Score
+    ];
+
+    // Add Survey URL if provided
+    if (data.surveyUrl) {
+      fieldValues.push({
+        field: '21',  // Using "PDF Report URL" field for Survey URL
+        value: String(data.surveyUrl)
+      });
     }
 
     // Step 1: Create or update contact
     const contactPayload = {
       contact: {
         email: data.email,
-        firstName: data.name || '',
-        fieldValues: [
-          { field: '11', value: String(data.overallScore) },
-          { field: '12', value: String(data.customerClarityScore) },
-          { field: '13', value: String(data.messagingStrengthScore) },
-          { field: '14', value: String(data.brandPositioningScore) },
-          { field: '15', value: String(data.corporateStoryScore) },
-          { field: '16', value: String(data.marketPresenceScore) }
-        ]
+        fieldValues: fieldValues
       }
     };
 
     console.log('Sending contact to ActiveCampaign...');
     
-    // Use native fetch instead of axios
     const contactResponse = await fetch(`${AC_API_URL}/api/3/contacts`, {
       method: 'POST',
       headers: {
@@ -89,8 +97,7 @@ exports.handler = async (event, context) => {
           const updatePayload = {
             contact: {
               email: data.email,
-              firstName: data.name || '',
-              fieldValues: contactPayload.contact.fieldValues
+              fieldValues: fieldValues
             }
           };
 

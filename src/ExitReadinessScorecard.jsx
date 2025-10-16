@@ -49,6 +49,48 @@ const ExitReadinessScorecard = () => {
     }
   };
 
+  // New function: Submit to backend (ActiveCampaign + R2)
+  const handleSubmitToBackend = async () => {
+    try {
+      // Generate the analysis data
+      const analysis = getAnalysis();
+      
+      // Generate PDF blob
+      const blob = await pdf(
+        <ExitReadinessPDF 
+          domainData={analysis.domainData}
+          overallScore={analysis.overallScore}
+          userEmail={email}
+          userName=""
+        />
+      ).toBlob();
+
+      // Create form data to send to backend
+      const formData = new FormData();
+      formData.append('pdf', blob, `exit-readiness-${email}-${Date.now()}.pdf`);
+      formData.append('email', email);
+      formData.append('overallScore', analysis.overallScore);
+      formData.append('domainScores', JSON.stringify(analysis.domainData));
+
+      // Send to Netlify function
+      const response = await fetch('/.netlify/functions/submit-scorecard', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit scorecard');
+      }
+
+      const result = await response.json();
+      console.log('Scorecard submitted successfully:', result);
+
+    } catch (error) {
+      console.error('Error submitting to backend:', error);
+      // Don't block the user flow - they can still see results
+    }
+  };
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -781,7 +823,12 @@ const ExitReadinessScorecard = () => {
                   placeholder="your@email.com"
                 />
                 <button
-                  onClick={() => setScreen('fullResults')}
+                  onClick={async () => {
+                    // Submit to backend (ActiveCampaign + R2)
+                    await handleSubmitToBackend();
+                    // Then show full results
+                    setScreen('fullResults');
+                  }}
                   disabled={!email || !email.includes('@')}
                   style={{ 
                     width: '100%',

@@ -182,13 +182,20 @@ async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl)
     }
   };
 
+  // Use https module to bypass SSL issues
+  const https = require('https');
+  const agent = new https.Agent({
+    rejectUnauthorized: false
+  });
+
   const contactResponse = await fetch(`${AC_API_URL}/api/3/contacts`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Api-Token': AC_API_KEY
     },
-    body: JSON.stringify(contactPayload)
+    body: JSON.stringify(contactPayload),
+    agent: agent
   });
 
   if (!contactResponse.ok) {
@@ -216,7 +223,8 @@ async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl)
       'Content-Type': 'application/json',
       'Api-Token': AC_API_KEY
     },
-    body: JSON.stringify(listPayload)
+    body: JSON.stringify(listPayload),
+    agent: agent
   });
 
   if (!listResponse.ok) {
@@ -241,7 +249,8 @@ async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl)
       'Content-Type': 'application/json',
       'Api-Token': AC_API_KEY
     },
-    body: JSON.stringify(tagPayload)
+    body: JSON.stringify(tagPayload),
+    agent: agent
   });
 
   if (!tagResponse.ok) {

@@ -1,26 +1,7 @@
-/**
- * Netlify Function: Submit Scorecard
- * 
- * This function:
- * 1. Receives PDF blob and user data from frontend
- * 2. Uploads PDF to Cloudflare R2
- * 3. Sends contact data to ActiveCampaign with scores and PDF link
- * 4. Returns success/error response
- */
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const busboy = require('busboy');
 
-const fetch = require('node-fetch');
-
-// Environment variables needed (set in Netlify dashboard):
-// - CLOUDFLARE_ACCOUNT_ID
-// - CLOUDFLARE_R2_ACCESS_KEY_ID
-// - CLOUDFLARE_R2_SECRET_ACCESS_KEY
-// - CLOUDFLARE_R2_BUCKET_NAME
-// - CLOUDFLARE_R2_PUBLIC_URL (e.g., https://pub-xxxxx.r2.dev)
-// - ACTIVECAMPAIGN_API_KEY
-// - ACTIVECAMPAIGN_API_URL
-// - ACTIVECAMPAIGN_LIST_ID
-
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
@@ -31,44 +12,55 @@ exports.handler = async (event, context) => {
 
   try {
     // Parse the multipart form data
-    const boundary = event.headers['content-type'].split('boundary=')[1];
-    const parts = parseMultipartForm(event.body, boundary);
+    const { fields, files } = await parseMultipartForm(event);
 
-    const pdfBlob = parts.pdf;
-    const email = parts.email;
-    const overallScore = parseInt(parts.overallScore);
-    const domainScores = JSON.parse(parts.domainScores);
+    console.log('Received fields:', Object.keys(fields));
+    console.log('Received files:', Object.keys(files));
 
-    // Validate required fields
-    if (!pdfBlob || !email || !overallScore || !domainScores) {
+    // Extract form data
+    const email = fields.email;
+    const overallScore = parseInt(fields.overallScore);
+    
+    // Parse domainScores - handle case where it might not exist
+    let domainScores = [];
+    if (fields.domainScores) {
+      try {
+        domainScores = JSON.parse(fields.domainScores);
+      } catch (parseError) {
+        console.error('Error parsing domainScores:', parseError);
+        domainScores = [];
+      }
+    }
+
+    const pdfFile = files.pdf;
+
+    if (!email || !overallScore || !pdfFile) {
+      console.error('Missing required fields:', { email, overallScore, hasPdf: !!pdfFile });
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Missing required fields' })
+        body: JSON.stringify({ 
+          error: 'Missing required fields',
+          received: { email: !!email, overallScore: !!overallScore, pdf: !!pdfFile }
+        })
       };
     }
 
-    // Generate unique filename
-    const timestamp = Date.now();
-    const sanitizedEmail = email.replace(/[^a-zA-Z0-9]/g, '-');
-    const filename = `exit-readiness-${sanitizedEmail}-${timestamp}.pdf`;
+    console.log('Processing scorecard for:', email, 'Score:', overallScore);
 
-    // Step 1: Upload PDF to Cloudflare R2
-    const pdfUrl = await uploadToR2(pdfBlob, filename);
+    // Upload PDF to Cloudflare R2
+    const pdfUrl = await uploadToR2(pdfFile, email);
+    console.log('PDF uploaded to:', pdfUrl);
 
-    // Step 2: Send to ActiveCampaign
-    await sendToActiveCampaign({
-      email,
-      overallScore,
-      domainScores,
-      pdfUrl
-    });
+    // Submit to ActiveCampaign
+    const acResult = await submitToActiveCampaign(email, overallScore, domainScores, pdfUrl);
+    console.log('ActiveCampaign result:', acResult);
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        success: true,
         message: 'Scorecard submitted successfully',
-        pdfUrl
+        pdfUrl,
+        activeCampaign: acResult
       })
     };
 
@@ -76,163 +68,192 @@ exports.handler = async (event, context) => {
     console.error('Error in submit-scorecard function:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        error: 'Failed to submit scorecard',
-        details: error.message
+      body: JSON.stringify({ 
+        error: 'Internal server error',
+        message: error.message,
+        stack: error.stack
       })
     };
   }
 };
 
-/**
- * Upload PDF to Cloudflare R2
- */
-async function uploadToR2(pdfBuffer, filename) {
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
-  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
-  const accessKeyId = process.env.CLOUDFLARE_R2_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY;
-  const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
+// Parse multipart/form-data
+function parseMultipartForm(event) {
+  return new Promise((resolve, reject) => {
+    const fields = {};
+    const files = {};
 
-  // Using AWS S3 SDK compatible API for R2
-  const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+    const bb = busboy({
+      headers: {
+        'content-type': event.headers['content-type'] || event.headers['Content-Type']
+      }
+    });
 
+    bb.on('file', (fieldname, file, info) => {
+      const { filename, encoding, mimeType } = info;
+      const chunks = [];
+
+      file.on('data', (data) => {
+        chunks.push(data);
+      });
+
+      file.on('end', () => {
+        files[fieldname] = {
+          filename,
+          encoding,
+          mimeType,
+          data: Buffer.concat(chunks)
+        };
+      });
+    });
+
+    bb.on('field', (fieldname, value) => {
+      fields[fieldname] = value;
+    });
+
+    bb.on('finish', () => {
+      resolve({ fields, files });
+    });
+
+    bb.on('error', (error) => {
+      reject(error);
+    });
+
+    // Decode base64 body if it's base64 encoded
+    const body = event.isBase64Encoded 
+      ? Buffer.from(event.body, 'base64')
+      : event.body;
+
+    bb.write(body);
+    bb.end();
+  });
+}
+
+// Upload PDF to Cloudflare R2
+async function uploadToR2(pdfFile, email) {
   const s3Client = new S3Client({
     region: 'auto',
-    endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+    endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
     credentials: {
-      accessKeyId: accessKeyId,
-      secretAccessKey: secretAccessKey
-    }
+      accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID,
+      secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY,
+    },
   });
 
+  const timestamp = Date.now();
+  const sanitizedEmail = email.replace(/[^a-zA-Z0-9]/g, '-');
+  const key = `exit-readiness-${sanitizedEmail}-${timestamp}.pdf`;
+
   const command = new PutObjectCommand({
-    Bucket: bucketName,
-    Key: filename,
-    Body: pdfBuffer,
-    ContentType: 'application/pdf'
+    Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
+    Key: key,
+    Body: pdfFile.data,
+    ContentType: 'application/pdf',
   });
 
   await s3Client.send(command);
 
-  // Return public URL
-  return `${publicUrl}/${filename}`;
+  // Return the public URL
+  return `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${key}`;
 }
 
-/**
- * Send contact and scores to ActiveCampaign
- */
-async function sendToActiveCampaign({ email, overallScore, domainScores, pdfUrl }) {
-  const apiKey = process.env.ACTIVECAMPAIGN_API_KEY;
-  const apiUrl = process.env.ACTIVECAMPAIGN_API_URL;
-  const listId = process.env.ACTIVECAMPAIGN_LIST_ID;
+// Submit to ActiveCampaign
+async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl) {
+  const AC_API_KEY = process.env.ACTIVECAMPAIGN_API_KEY;
+  const AC_API_URL = process.env.ACTIVECAMPAIGN_API_URL;
+  const AC_LIST_ID = process.env.ACTIVECAMPAIGN_LIST_ID;
+
+  console.log('Submitting to ActiveCampaign:', { email, overallScore, pdfUrl });
 
   // Step 1: Create or update contact
   const contactPayload = {
     contact: {
       email: email,
       fieldValues: [
-        { field: '20', value: overallScore.toString() },  // Overall Score (Field ID 20)
-        { field: '21', value: pdfUrl }                    // PDF Report URL (Field ID 21)
+        {
+          field: '20', // Overall Score field
+          value: overallScore.toString()
+        },
+        {
+          field: '21', // PDF URL field
+          value: pdfUrl
+        }
       ]
     }
   };
 
-  const contactResponse = await fetch(`${apiUrl}/api/3/contact/sync`, {
+  const contactResponse = await fetch(`${AC_API_URL}/api/3/contacts`, {
     method: 'POST',
     headers: {
-      'Api-Token': apiKey,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Api-Token': AC_API_KEY
     },
     body: JSON.stringify(contactPayload)
   });
 
   if (!contactResponse.ok) {
     const errorText = await contactResponse.text();
-    throw new Error(`ActiveCampaign contact sync failed: ${errorText}`);
+    throw new Error(`ActiveCampaign contact creation failed: ${errorText}`);
   }
 
   const contactData = await contactResponse.json();
   const contactId = contactData.contact.id;
 
+  console.log('Contact created/updated:', contactId);
+
   // Step 2: Add contact to list
-  const contactListPayload = {
+  const listPayload = {
     contactList: {
-      list: listId,
+      list: AC_LIST_ID,
       contact: contactId,
-      status: 1 // 1 = active, 2 = unsubscribed
+      status: 1 // 1 = subscribed
     }
   };
 
-  const listResponse = await fetch(`${apiUrl}/api/3/contactLists`, {
+  const listResponse = await fetch(`${AC_API_URL}/api/3/contactLists`, {
     method: 'POST',
     headers: {
-      'Api-Token': apiKey,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Api-Token': AC_API_KEY
     },
-    body: JSON.stringify(contactListPayload)
+    body: JSON.stringify(listPayload)
   });
 
   if (!listResponse.ok) {
     const errorText = await listResponse.text();
-    console.error(`Warning: Could not add to list: ${errorText}`);
-    // Don't throw - contact was created successfully
+    console.error('List subscription failed (may already exist):', errorText);
+    // Don't throw - contact might already be on list
+  } else {
+    console.log('Contact added to list');
   }
 
-  // Step 3: Add tag "exit-readiness-scorecard"
+  // Step 3: Add tag to trigger automation
   const tagPayload = {
     contactTag: {
       contact: contactId,
-      tag: 'exit-readiness-scorecard'
+      tag: 'exit-readiness-scorecard' // This tag must exist in ActiveCampaign
     }
   };
 
-  const tagResponse = await fetch(`${apiUrl}/api/3/contactTags`, {
+  const tagResponse = await fetch(`${AC_API_URL}/api/3/contactTags`, {
     method: 'POST',
     headers: {
-      'Api-Token': apiKey,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Api-Token': AC_API_KEY
     },
     body: JSON.stringify(tagPayload)
   });
 
   if (!tagResponse.ok) {
     const errorText = await tagResponse.text();
-    console.error(`Warning: Could not add tag: ${errorText}`);
-    // Don't throw - contact was created successfully
+    throw new Error(`ActiveCampaign tag application failed: ${errorText}`);
   }
 
-  return contactId;
-}
+  console.log('Tag applied successfully');
 
-/**
- * Simple multipart form parser
- * (In production, consider using a library like 'busboy' or 'formidable')
- */
-function parseMultipartForm(body, boundary) {
-  const parts = {};
-  const sections = body.split(`--${boundary}`);
-
-  for (const section of sections) {
-    if (section.includes('Content-Disposition')) {
-      const nameMatch = section.match(/name="([^"]+)"/);
-      if (nameMatch) {
-        const name = nameMatch[1];
-        const contentStart = section.indexOf('\r\n\r\n') + 4;
-        const contentEnd = section.lastIndexOf('\r\n');
-        let content = section.substring(contentStart, contentEnd);
-
-        // If it's the PDF, keep as buffer
-        if (name === 'pdf') {
-          // Extract binary data (this is a simplified version)
-          // In production, you'd want to use a proper multipart parser
-          parts[name] = Buffer.from(content, 'binary');
-        } else {
-          parts[name] = content;
-        }
-      }
-    }
-  }
-
-  return parts;
+  return {
+    contactId,
+    listAdded: listResponse.ok,
+    tagApplied: true
+  };
 }

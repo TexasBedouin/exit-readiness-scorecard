@@ -111,7 +111,7 @@ const ExitReadinessScorecard = () => {
       question: 'Can you name your top 3 customer segments and explain what drives each one\'s buying decision?',
       description: 'Buyers look for companies that know exactly who they serve and why those customers choose them. Vague targets like "healthcare systems" or "patients" signal risk. Specific segments with documented buying criteria signal market mastery.',
       options: [
-        { value: 1, label: 'We serve "healthcare" broadly â€" no clear segments' },
+        { value: 1, label: 'We serve "healthcare" broadly - no clear segments' },
         { value: 2, label: 'We have 2-3 general categories (e.g., hospitals, clinics)' },
         { value: 3, label: 'We have 3 defined segments with basic pain points' },
         { value: 4, label: 'We have 3 segments with validated buying criteria and decision-maker personas' },
@@ -142,11 +142,11 @@ const ExitReadinessScorecard = () => {
       question: 'When prospects ask "How are you different?", can your entire team give the same clear answer?',
       description: 'Buyers interview multiple stakeholders during diligence. If your CEO, VP of Sales, and Head of Product each describe your differentiation differently, it signals internal misalignment and weak positioning.',
       options: [
-        { value: 1, label: 'Every conversation is different â€" no consistent answer' },
+        { value: 1, label: 'Every conversation is different - no consistent answer' },
         { value: 2, label: 'We have talking points but people interpret them differently' },
         { value: 3, label: 'Leadership is aligned, but the broader team varies' },
         { value: 4, label: 'Company-wide alignment on 2-3 core differentiators with proof points' },
-        { value: 5, label: 'Everyone â€" from reception to C-suite â€" delivers the same crisp, memorable differentiation backed by customer evidence' }
+        { value: 5, label: 'Everyone - from reception to C-suite - delivers the same crisp, memorable differentiation backed by customer evidence' }
       ]
     },
     {
@@ -155,9 +155,9 @@ const ExitReadinessScorecard = () => {
       questionNumber: 4,
       title: 'Message Testing & Validation',
       question: 'Have you tested your core messaging with customers, prospects, or partners to see what resonates?',
-      description: 'The best messaging isn\'t created in conference rooms â€" it\'s validated in the market. Companies that test their positioning with real buyers close deals 30-40% faster because they\'ve eliminated messaging that confuses or fails to land.',
+      description: 'The best messaging isn\'t created in conference rooms - it\'s validated in the market. Companies that test their positioning with real buyers close deals 30-40% faster because they\'ve eliminated messaging that confuses or fails to land.',
       options: [
-        { value: 1, label: 'We haven\'t tested â€" our messaging is internal opinion' },
+        { value: 1, label: 'We haven\'t tested - our messaging is internal opinion' },
         { value: 2, label: 'We\'ve gotten informal feedback from a few people' },
         { value: 3, label: 'We\'ve conducted some customer interviews but haven\'t adjusted messaging' },
         { value: 4, label: 'We\'ve tested with 10+ external stakeholders and refined based on feedback' },
@@ -171,7 +171,7 @@ const ExitReadinessScorecard = () => {
       questionNumber: 5,
       title: 'Category Leadership Evidence',
       question: 'When someone searches for solutions in your category, do you appear in the top results, publications, or "best of" lists?',
-      description: 'Buyers research before they reach out. If you\'re not visible in search results, industry articles, or analyst reports, you\'re losing deals before conversations even start. Category leaders get inbound inquiries â€" followers have to hunt.',
+      description: 'Buyers research before they reach out. If you\'re not visible in search results, industry articles, or analyst reports, you\'re losing deals before conversations even start. Category leaders get inbound inquiries - followers have to hunt.',
       options: [
         { value: 1, label: 'We rarely appear in searches or industry roundups' },
         { value: 2, label: 'We appear occasionally but inconsistently' },
@@ -186,13 +186,13 @@ const ExitReadinessScorecard = () => {
       questionNumber: 6,
       title: 'Competitive Win Documentation',
       question: 'Do you track why you win (or lose) competitive deals, and does that data inform your strategy?',
-      description: 'Category leaders don\'t just win â€" they know why they win. If you can\'t point to data showing "we win on speed" or "we win on integration capabilities," you\'re guessing. Buyers want to acquire companies that dominate for documented, repeatable reasons.',
+      description: 'Category leaders don\'t just win - they know why they win. If you can\'t point to data showing "we win on speed" or "we win on integration capabilities," you\'re guessing. Buyers want to acquire companies that dominate for documented, repeatable reasons.',
       options: [
         { value: 1, label: 'We don\'t track competitive wins/losses systematically' },
         { value: 2, label: 'Sales reps share anecdotes but nothing is documented' },
         { value: 3, label: 'We collect win/loss data but don\'t analyze it regularly' },
         { value: 4, label: 'We track win/loss reasons and review them quarterly' },
-        { value: 5, label: 'We have a formal win/loss program that directly informs product, messaging, and sales strategy â€" and we can prove our win rate is improving' }
+        { value: 5, label: 'We have a formal win/loss program that directly informs product, messaging, and sales strategy - and we can prove our win rate is improving' }
       ]
     },
     // Domain 4: Corporate Story
@@ -202,7 +202,7 @@ const ExitReadinessScorecard = () => {
       questionNumber: 7,
       title: 'Growth Narrative Clarity',
       question: 'Can you articulate where your company is going (3-year targets) and show proof you\'ll get there?',
-      description: 'Buyers don\'t acquire your current revenue â€" they acquire your growth trajectory. If you say "we\'re growing fast" but can\'t point to specific targets, retention rates, pipeline coverage, or competitive wins, buyers discount your valuation.',
+      description: 'Buyers don\'t acquire your current revenue - they acquire your growth trajectory. If you say "we\'re growing fast" but can\'t point to specific targets, retention rates, pipeline coverage, or competitive wins, buyers discount your valuation.',
       options: [
         { value: 1, label: 'We talk about vision but don\'t have concrete growth targets' },
         { value: 2, label: 'We have revenue goals but limited proof of execution' },
@@ -223,7 +223,7 @@ const ExitReadinessScorecard = () => {
         { value: 2, label: 'We mention credentials but don\'t connect them to our strategy' },
         { value: 3, label: 'Leadership has relevant experience but it\'s not woven into our story' },
         { value: 4, label: 'Our leadership story shows domain expertise and past scale experience' },
-        { value: 5, label: 'Our team has a documented track record of building, scaling, or exiting companies â€" and we use that credibility as proof we\'ll execute our vision' }
+        { value: 5, label: 'Our team has a documented track record of building, scaling, or exiting companies - and we use that credibility as proof we\'ll execute our vision' }
       ]
     },
     // Domain 5: Market Presence
@@ -233,7 +233,7 @@ const ExitReadinessScorecard = () => {
       questionNumber: 9,
       title: 'Thought Leadership & PR',
       question: 'In the past 12 months, how often has your company or leadership been featured in industry media, podcasts, or conferences?',
-      description: 'Buyers track who\'s shaping the conversation in your space. If you\'re not speaking at conferences, quoted in trade publications, or sharing insights that others reference, you\'re invisible â€" and invisible companies get lower valuations.',
+      description: 'Buyers track who\'s shaping the conversation in your space. If you\'re not speaking at conferences, quoted in trade publications, or sharing insights that others reference, you\'re invisible - and invisible companies get lower valuations.',
       options: [
         { value: 1, label: 'Zero media mentions or speaking engagements in the past year' },
         { value: 2, label: '1-2 appearances or mentions' },
@@ -361,7 +361,7 @@ const ExitReadinessScorecard = () => {
       'Brand Positioning': {
         high: "You're visible and credible. Now focus on maintaining momentum: regular thought leadership, award submissions, speaking opportunities, and PR that reinforces your category ownership.",
         medium: "You have some visibility but aren't yet seen as the category leader. Audit where you appear (or don't) when prospects research your space. Create a 6-month visibility plan: 1 speaking opportunity, 3 media placements, 1 award submission, and SEO improvements.",
-        low: "You're invisible to buyers, which means you're leaving millions on the table. Start with the basics: optimize your website for search, get featured in one industry publication, and document 2-3 customer success stories. Visibility compounds â€" but you have to start."
+        low: "You're invisible to buyers, which means you're leaving millions on the table. Start with the basics: optimize your website for search, get featured in one industry publication, and document 2-3 customer success stories. Visibility compounds - but you have to start."
       },
       'Corporate Story': {
         high: "Your story is compelling and backed by proof. Make sure it's consistently told across every touchpoint: investor decks, sales conversations, recruiting, and media appearances.",
@@ -371,7 +371,7 @@ const ExitReadinessScorecard = () => {
       'Market Presence': {
         high: "Your market presence is strong. Keep refining: A/B test your website messaging, update case studies quarterly, and track which materials correlate with faster deal cycles.",
         medium: "Your materials exist but may not be compelling enough. Audit your assets: Would you be impressed if you were evaluating your company? Get outside feedback and prioritize the 2-3 updates that would have the biggest impact.",
-        low: "This is hurting you in every sales conversation and will devastate your valuation. Start with your pitch deck â€" make sure it's clear, compelling, and tells your story in 10 slides or less. Then tackle your website homepage. Buyers judge you in 10 seconds."
+        low: "This is hurting you in every sales conversation and will devastate your valuation. Start with your pitch deck - make sure it's clear, compelling, and tells your story in 10 slides or less. Then tackle your website homepage. Buyers judge you in 10 seconds."
       }
     };
 
@@ -383,24 +383,24 @@ const ExitReadinessScorecard = () => {
   const getBioPlus = (domainName) => {
     const stories = {
       'Customer Clarity': {
-        challenge: "BioPlus Specialty Pharmacy faced exactly this challenge. They were serving \"patients\" â€" which meant competing with every pharmacy in America. Working with Legacy DNA, they identified three high-value segments: oncology patients needing rapid access, specialty providers requiring seamless integration, and pharma partners seeking distribution excellence.",
-        results: "By tailoring their approach to each segment, BioPlus achieved: #1 ranking in oncology specialty pharmacy care (by both patients and prescribers), Named one of Money Magazine's 5 Best Online Pharmacies â€" the only specialty pharmacy ever chosen, and 78,000 â†' 325,000 dispenses in seven years (22.5% CAGR). They went from commodity player to category leader â€" and sold twice at premium multiples."
+        challenge: "BioPlus Specialty Pharmacy faced exactly this challenge. They were serving \"patients\" - which meant competing with every pharmacy in America. Working with Legacy DNA, they identified three high-value segments: oncology patients needing rapid access, specialty providers requiring seamless integration, and pharma partners seeking distribution excellence.",
+        results: "By tailoring their approach to each segment, BioPlus achieved: #1 ranking in oncology specialty pharmacy care (by both patients and prescribers), Named one of Money Magazine's 5 Best Online Pharmacies - the only specialty pharmacy ever chosen, and 78,000 â†' 325,000 dispenses in seven years (22.5% CAGR). They went from commodity player to category leader - and sold twice at premium multiples."
       },
       'Messaging Strength': {
-        challenge: "BioPlus had a powerful service but couldn't articulate what made them different. Legacy DNA worked with their leadership to create The Power of 2â„¢: 2-Hour Patient Acceptance Guaranteeâ„¢, 2-Day Ready to Shipâ„¢, 2-Click Refillsâ„¢ â€" all anchored by a vision to \"heal the world 2gether.\" This wasn't just a tagline â€" it became the operational rallying cry. Every employee, every customer touchpoint, every sales conversation reinforced the same message.",
+        challenge: "BioPlus had a powerful service but couldn't articulate what made them different. Legacy DNA worked with their leadership to create The Power of 2â„¢: 2-Hour Patient Acceptance Guaranteeâ„¢, 2-Day Ready to Shipâ„¢, 2-Click Refillsâ„¢ - all anchored by a vision to \"heal the world 2gether.\" This wasn't just a tagline - it became the operational rallying cry. Every employee, every customer touchpoint, every sales conversation reinforced the same message.",
         results: "The result: 13 consecutive quarters of growth, Revenue doubled from $750M to $2B, and Multiple Gold Aster Awards for creative excellence (top 5% nationally for healthcare marketing). One clear message. Compounding impact."
       },
       'Brand Positioning': {
-        challenge: "BioPlus wasn't just a great pharmacy â€" they systematically built evidence of category leadership: Award-winning digital presence (transformed their website and social strategy), Reputation engine (lifted Google ratings from 2.4 to 4.8 in under 12 months), Industry recognition (Gold Aster Awards multiple years, including two golds in 2025), and Media validation (featured as one of America's best online pharmacies by Money Magazine).",
-        results: "This wasn't vanity â€" it was strategic. When buyers evaluated BioPlus, the evidence of category leadership was undeniable. Premium acquirers (Nautic Partners, Elevance Health) don't buy \"good companies.\" They buy market leaders."
+        challenge: "BioPlus wasn't just a great pharmacy - they systematically built evidence of category leadership: Award-winning digital presence (transformed their website and social strategy), Reputation engine (lifted Google ratings from 2.4 to 4.8 in under 12 months), Industry recognition (Gold Aster Awards multiple years, including two golds in 2025), and Media validation (featured as one of America's best online pharmacies by Money Magazine).",
+        results: "This wasn't vanity - it was strategic. When buyers evaluated BioPlus, the evidence of category leadership was undeniable. Premium acquirers (Nautic Partners, Elevance Health) don't buy \"good companies.\" They buy market leaders."
       },
       'Corporate Story': {
         challenge: "BioPlus started with a powerful founder story: Dr. Stephen Vogt's belief that specialty medicine access should be fast, easy, and compassionate. But that alone wasn't enough. Working with Legacy DNA, they connected that mission to measurable traction: Clear vision (Become the 4th largest U.S. specialty pharmacy), Proof of execution (13 consecutive quarters of growth, 202% gross profit increase in 3 years), and Leadership credibility (Mark Montgomery had previously scaled and sold Axium Healthcare Pharmacy to Kroger).",
-        results: "When Dr. Vogt retired, Mark completed the transformation and led BioPlus to acquisition. The story wasn't just inspiring â€" it was evidence of inevitable success. Result: Two premium exits within 3 years."
+        results: "When Dr. Vogt retired, Mark completed the transformation and led BioPlus to acquisition. The story wasn't just inspiring - it was evidence of inevitable success. Result: Two premium exits within 3 years."
       },
       'Market Presence': {
-        challenge: "BioPlus didn't just improve their operations â€" they made sure the market could see their excellence: Digital transformation (award-winning website rebuild), Sales enablement (new decks, case studies, and tools that equipped reps to win in disrupted markets), Customer experience innovation (co-creation programs with patients and providers that built advocacy), and New revenue channels (direct-to-consumer program that added millions in gross profit).",
-        results: "These weren't \"nice to haves\" â€" they were the engine that delivered 13 consecutive quarters of growth and made BioPlus irresistible to premium acquirers."
+        challenge: "BioPlus didn't just improve their operations - they made sure the market could see their excellence: Digital transformation (award-winning website rebuild), Sales enablement (new decks, case studies, and tools that equipped reps to win in disrupted markets), Customer experience innovation (co-creation programs with patients and providers that built advocacy), and New revenue channels (direct-to-consumer program that added millions in gross profit).",
+        results: "These weren't \"nice to haves\" - they were the engine that delivered 13 consecutive quarters of growth and made BioPlus irresistible to premium acquirers."
       }
     };
     return stories[domainName];
@@ -418,13 +418,13 @@ const ExitReadinessScorecard = () => {
               Are You Exit Ready?
             </h1>
             <p style={{ fontSize: isMobile ? '1.125rem' : '1.5rem', color: '#374151', marginBottom: '2rem', maxWidth: '48rem', margin: '0 auto' }}>
-              In 5-7 minutes, see how your company stacks up against what premium buyers look for â€" and what gaps might be costing you millions.
+              In 5-7 minutes, see how your company stacks up against what premium buyers look for - and what gaps might be costing you millions.
             </p>
           </div>
 
           <div style={{ backgroundColor: 'white', borderRadius: '1rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: isMobile ? '1.5rem' : '3rem', marginBottom: '2rem' }}>
             <p style={{ fontSize: '1.125rem', color: '#374151', marginBottom: '2rem' }}>
-              If you're planning to exit in the next 12â€"36 months, your brand clarity, market position, and growth story can make or break your valuation. The <strong>Exit Readiness Scorecardâ„¢</strong> reveals where you're strong, where you're vulnerable, and what to fix before you enter the deal room.
+              If you're planning to exit in the next 12-36 months, your brand clarity, market position, and growth story can make or break your valuation. The <strong>Exit Readiness Scorecardâ„¢</strong> reveals where you're strong, where you're vulnerable, and what to fix before you enter the deal room.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
@@ -489,13 +489,13 @@ const ExitReadinessScorecard = () => {
                 Start My Exit Readiness Scorecard
                 <ArrowRight style={{ marginLeft: '0.75rem', width: '1.5rem', height: '1.5rem' }} />
               </button>
-              <p style={{ fontSize: '0.875rem', color: '#6B7280', marginTop: '1rem' }}>No credit card required â€¢ Results delivered instantly</p>
+              <p style={{ fontSize: '0.875rem', color: '#6B7280', marginTop: '1rem' }}>No credit card required \u2022 Results delivered instantly</p>
             </div>
           </div>
 
           <div style={{ textAlign: 'center', color: '#6B7280' }}>
             <p style={{ fontSize: '0.875rem' }}>
-              Created by Legacy DNA â€" trusted by PE-backed healthtech companies preparing for successful exits
+              Created by Legacy DNA - trusted by PE-backed healthtech companies preparing for successful exits
             </p>
           </div>
         </div>
@@ -576,7 +576,7 @@ const ExitReadinessScorecard = () => {
                 <strong>Your strongest area is {analysis.strongest.domain} ({analysis.strongest.displayScore})</strong>, and your biggest opportunity is <strong>{analysis.weakest.domain} ({analysis.weakest.displayScore})</strong>.
               </p>
               <p style={{ color: '#374151' }}>
-                Below, see how your company compares to top performers in each domain â€" and what you can do to close the gaps.
+                Below, see how your company compares to top performers in each domain - and what you can do to close the gaps.
               </p>
             </div>
 
@@ -640,11 +640,11 @@ const ExitReadinessScorecard = () => {
                   <div style={{ marginBottom: '1.5rem' }}>
                     <h4 style={{ fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>Why This Matters for Exit:</h4>
                     <p style={{ color: '#374151', marginBottom: '1rem' }}>
-                      {domain.domain === 'Customer Clarity' && "Buyers pay premiums for companies that dominate specific segments, not those that serve \"everyone.\" When you can prove you own a segment â€" with documented personas, validated buying criteria, and segment-specific strategies â€" you eliminate buyer concerns about market risk."}
-                      {domain.domain === 'Messaging Strength' && "When buyers conduct diligence, they interview your team, customers, and partners. If those conversations reveal inconsistent or unclear messaging, it signals weak leadership alignment and market confusion â€" both of which destroy valuation. Companies with crisp, validated messaging close deals 30% faster and command higher multiples."}
+                      {domain.domain === 'Customer Clarity' && "Buyers pay premiums for companies that dominate specific segments, not those that serve \"everyone.\" When you can prove you own a segment - with documented personas, validated buying criteria, and segment-specific strategies - you eliminate buyer concerns about market risk."}
+                      {domain.domain === 'Messaging Strength' && "When buyers conduct diligence, they interview your team, customers, and partners. If those conversations reveal inconsistent or unclear messaging, it signals weak leadership alignment and market confusion - both of which destroy valuation. Companies with crisp, validated messaging close deals 30% faster and command higher multiples."}
                       {domain.domain === 'Brand Positioning' && "Buyers research you long before they reach out. If you're not appearing in search results, industry publications, or analyst reports, you're losing deals before conversations start. Category leaders get inbound interest and premium multiples. Followers get commoditized offers."}
-                      {domain.domain === 'Corporate Story' && "Buyers don't acquire your current revenue â€" they acquire your trajectory. If you can't articulate where you're going (specific 3-year targets) and prove you'll get there (retention rates, pipeline, competitive wins), buyers discount your valuation by 30-50%. A compelling corporate story turns \"interesting company\" into \"must-have acquisition.\""}
-                      {domain.domain === 'Market Presence' && "Your market-facing assets â€" website, pitch deck, case studies, demo â€" are evaluated during diligence. If they're outdated, generic, or unconvincing, buyers assume the rest of your business is too. Top-performing companies have exceptional materials that shorten sales cycles and signal operational excellence."}
+                      {domain.domain === 'Corporate Story' && "Buyers don't acquire your current revenue - they acquire your trajectory. If you can't articulate where you're going (specific 3-year targets) and prove you'll get there (retention rates, pipeline, competitive wins), buyers discount your valuation by 30-50%. A compelling corporate story turns \"interesting company\" into \"must-have acquisition.\""}
+                      {domain.domain === 'Market Presence' && "Your market-facing assets - website, pitch deck, case studies, demo - are evaluated during diligence. If they're outdated, generic, or unconvincing, buyers assume the rest of your business is too. Top-performing companies have exceptional materials that shorten sales cycles and signal operational excellence."}
                     </p>
                   </div>
 
@@ -664,12 +664,12 @@ const ExitReadinessScorecard = () => {
 
             <div style={{ marginTop: '3rem' }}>
               <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827', marginBottom: '1rem' }}>Turn Insight Into Action</h3>
-              <p style={{ color: '#374151', marginBottom: '1.5rem' }}>You now know where you stand â€" and where you're vulnerable. The next step is turning these insights into a roadmap that strengthens your position and increases what buyers will pay.</p>
+              <p style={{ color: '#374151', marginBottom: '1.5rem' }}>You now know where you stand - and where you're vulnerable. The next step is turning these insights into a roadmap that strengthens your position and increases what buyers will pay.</p>
               
               <div style={{ marginBottom: '1rem' }}>
                 <div style={{ border: '2px solid #34296A', borderRadius: '0.75rem', padding: '1.5rem', marginBottom: '1rem' }}>
                   <h4 style={{ fontWeight: 'bold', fontSize: '1.125rem', marginBottom: '0.5rem', color: '#34296A' }}>Book My Exit Readiness Diagnosticâ„¢</h4>
-                  <p style={{ color: '#6B7280', fontSize: '0.875rem', marginBottom: '1rem' }}>Get 2 growth levers and 1 red flag personalized to your company â€" 30 minutes, zero obligation</p>
+                  <p style={{ color: '#6B7280', fontSize: '0.875rem', marginBottom: '1rem' }}>Get 2 growth levers and 1 red flag personalized to your company - 30 minutes, zero obligation</p>
                   <a 
                     href="https://calendly.com/drroxietime/exit-readiness-diagnostic"
                     target="_blank"

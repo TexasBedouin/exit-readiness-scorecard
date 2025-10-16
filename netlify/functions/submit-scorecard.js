@@ -161,6 +161,7 @@ async function uploadToR2(pdfFile, email) {
 async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl) {
   const axios = require('axios');
   const https = require('https');
+  const crypto = require('crypto');
   
   const AC_API_KEY = process.env.ACTIVECAMPAIGN_API_KEY;
   const AC_API_URL = process.env.ACTIVECAMPAIGN_API_URL;
@@ -168,11 +169,15 @@ async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl)
 
   console.log('Submitting to ActiveCampaign:', { email, overallScore, pdfUrl });
 
-  // Create axios instance with custom HTTPS agent
+  // Create axios instance with proper Node.js 18+ compatible HTTPS agent
+  // This fixes the SSL/TLS handshake error by allowing legacy server connections
+  // while maintaining security through proper certificate validation
   const axiosInstance = axios.create({
     httpsAgent: new https.Agent({
-      rejectUnauthorized: false,
-      secureProtocol: 'TLSv1_2_method'
+      // Allow legacy server connections (required for Node 18+)
+      secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
+      // Keep TLS validation enabled for security
+      rejectUnauthorized: true
     })
   });
 
@@ -262,6 +267,13 @@ async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl)
     };
   } catch (error) {
     console.error('ActiveCampaign API error:', error.message);
+    
+    // Log more details for debugging
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    
     throw error;
   }
 }

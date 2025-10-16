@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, CheckCircle, AlertCircle, TrendingUp, Lock, Mail, Download, Clock, BarChart3, Target } from 'lucide-react';
+import { ArrowRight, CheckCircle, TrendingUp, Lock, Mail, Download, Clock, BarChart3, Target } from 'lucide-react';
 import { pdf } from '@react-pdf/renderer';
 import ExitReadinessPDF from './ExitReadinessPDF';
 

@@ -157,67 +157,24 @@ async function uploadToR2(pdfFile, email) {
   return `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${key}`;
 }
 
-// Helper function to make HTTPS requests with custom SSL handling
-function httpsRequest(url, options, data) {
-  const https = require('https');
-  const urlParsed = new URL(url);
-  
-  return new Promise((resolve, reject) => {
-    const requestOptions = {
-      hostname: urlParsed.hostname,
-      port: 443,
-      path: urlParsed.pathname + urlParsed.search,
-      method: options.method || 'GET',
-      headers: options.headers || {},
-      rejectUnauthorized: false // Bypass SSL verification
-    };
-
-    const req = https.request(requestOptions, (res) => {
-      let body = '';
-      
-      res.on('data', (chunk) => {
-        body += chunk;
-      });
-      
-      res.on('end', () => {
-        try {
-          const jsonBody = JSON.parse(body);
-          resolve({
-            ok: res.statusCode >= 200 && res.statusCode < 300,
-            status: res.statusCode,
-            json: () => Promise.resolve(jsonBody),
-            text: () => Promise.resolve(body)
-          });
-        } catch (e) {
-          resolve({
-            ok: res.statusCode >= 200 && res.statusCode < 300,
-            status: res.statusCode,
-            json: () => Promise.reject(new Error('Invalid JSON')),
-            text: () => Promise.resolve(body)
-          });
-        }
-      });
-    });
-
-    req.on('error', (error) => {
-      reject(error);
-    });
-
-    if (data) {
-      req.write(data);
-    }
-    
-    req.end();
-  });
-}
-
 // Submit to ActiveCampaign
 async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl) {
+  const axios = require('axios');
+  const https = require('https');
+  
   const AC_API_KEY = process.env.ACTIVECAMPAIGN_API_KEY;
   const AC_API_URL = process.env.ACTIVECAMPAIGN_API_URL;
   const AC_LIST_ID = process.env.ACTIVECAMPAIGN_LIST_ID;
 
   console.log('Submitting to ActiveCampaign:', { email, overallScore, pdfUrl });
+
+  // Create axios instance with custom HTTPS agent
+  const axiosInstance = axios.create({
+    httpsAgent: new https.Agent({
+      rejectUnauthorized: false,
+      secureProtocol: 'TLSv1_2_method'
+    })
+  });
 
   // Step 1: Create or update contact
   const contactPayload = {
@@ -236,87 +193,75 @@ async function submitToActiveCampaign(email, overallScore, domainScores, pdfUrl)
     }
   };
 
-  const contactResponse = await httpsRequest(
-    `${AC_API_URL}/api/3/contacts`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Api-Token': AC_API_KEY
+  try {
+    const contactResponse = await axiosInstance.post(
+      `${AC_API_URL}/api/3/contacts`,
+      contactPayload,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Api-Token': AC_API_KEY
+        }
       }
-    },
-    JSON.stringify(contactPayload)
-  );
+    );
 
-  if (!contactResponse.ok) {
-    const errorText = await contactResponse.text();
-    throw new Error(`ActiveCampaign contact creation failed: ${errorText}`);
-  }
+    const contactId = contactResponse.data.contact.id;
+    console.log('Contact created/updated:', contactId);
 
-  const contactData = await contactResponse.json();
-  const contactId = contactData.contact.id;
+    // Step 2: Add contact to list
+    const listPayload = {
+      contactList: {
+        list: AC_LIST_ID,
+        contact: contactId,
+        status: 1 // 1 = subscribed
+      }
+    };
 
-  console.log('Contact created/updated:', contactId);
-
-  // Step 2: Add contact to list
-  const listPayload = {
-    contactList: {
-      list: AC_LIST_ID,
-      contact: contactId,
-      status: 1 // 1 = subscribed
+    try {
+      await axiosInstance.post(
+        `${AC_API_URL}/api/3/contactLists`,
+        listPayload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Api-Token': AC_API_KEY
+          }
+        }
+      );
+      console.log('Contact added to list');
+    } catch (listError) {
+      console.error('List subscription failed (may already exist):', listError.message);
+      // Don't throw - contact might already be on list
     }
-  };
 
-  const listResponse = await httpsRequest(
-    `${AC_API_URL}/api/3/contactLists`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Api-Token': AC_API_KEY
+    // Step 3: Add tag to trigger automation
+    const tagPayload = {
+      contactTag: {
+        contact: contactId,
+        tag: 'exit-readiness-scorecard' // This tag must exist in ActiveCampaign
       }
-    },
-    JSON.stringify(listPayload)
-  );
+    };
 
-  if (!listResponse.ok) {
-    const errorText = await listResponse.text();
-    console.error('List subscription failed (may already exist):', errorText);
-    // Don't throw - contact might already be on list
-  } else {
-    console.log('Contact added to list');
-  }
-
-  // Step 3: Add tag to trigger automation
-  const tagPayload = {
-    contactTag: {
-      contact: contactId,
-      tag: 'exit-readiness-scorecard' // This tag must exist in ActiveCampaign
-    }
-  };
-
-  const tagResponse = await httpsRequest(
-    `${AC_API_URL}/api/3/contactTags`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Api-Token': AC_API_KEY
+    await axiosInstance.post(
+      `${AC_API_URL}/api/3/contactTags`,
+      tagPayload,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Api-Token': AC_API_KEY
+        }
       }
-    },
-    JSON.stringify(tagPayload)
-  );
+    );
 
-  if (!tagResponse.ok) {
-    const errorText = await tagResponse.text();
-    throw new Error(`ActiveCampaign tag application failed: ${errorText}`);
+    console.log('Tag applied successfully');
+
+    return {
+      contactId,
+      listAdded: true,
+      tagApplied: true
+    };
+  } catch (error) {
+    console.error('ActiveCampaign API error:', error.message);
+    throw error;
   }
-
-  console.log('Tag applied successfully');
-
-  return {
-    contactId,
-    listAdded: listResponse.ok,
-    tagApplied: true
-  };
 }

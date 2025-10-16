@@ -4,6 +4,7 @@
   "description": "Backend functions for Exit Readiness Scorecard",
   "dependencies": {
     "busboy": "^1.6.0",
-    "@aws-sdk/client-s3": "^3.425.0"
+    "@aws-sdk/client-s3": "^3.425.0",
+    "axios": "^1.6.0"
   }
 }

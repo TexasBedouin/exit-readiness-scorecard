@@ -1031,7 +1031,7 @@ const handleDownloadPDF = async () => {
                   marginBottom: '0.5rem',
                   fontFamily: 'Georgia, "Times New Roman", serif'
                 }}>
-                  \u00A9 2025 Legacy DNA | Growth for Health Innovators | <a href="https://www.legacy-dna.com" style={{ color: '#009DB9', textDecoration: 'none' }}>www.legacy-dna.com</a>
+                  (c) 2025 Legacy DNA | Growth for Health Innovators | <a href="https://www.legacy-dna.com" style={{ color: '#009DB9', textDecoration: 'none' }}>www.legacy-dna.com</a>
                 </p>
                 <p style={{ 
                   marginBottom: '0',

@@ -194,6 +194,7 @@ const handleDownloadPDF = async () => {
         }
       }, 1000); // Give DOM 1 second to render
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen, email]);
 
   const questions = [

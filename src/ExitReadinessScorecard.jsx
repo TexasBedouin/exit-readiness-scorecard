@@ -506,18 +506,7 @@ const handleDownloadPDF = async () => {
     return (
       <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: isMobile ? '1.5rem' : '3rem' }}>
         <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
-          {/* Logo Header */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
-            <img 
-              src="/legacy-dna-logo.png" 
-              alt="Legacy DNA" 
-              style={{ 
-                height: isMobile ? '50px' : '60px',
-                width: 'auto',
-                objectFit: 'contain'
-              }} 
-            />
-          </div>
+          
 
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <div style={{ 

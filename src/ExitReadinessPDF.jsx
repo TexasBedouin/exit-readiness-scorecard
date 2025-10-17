@@ -5,7 +5,7 @@ import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 const styles = StyleSheet.create({
   page: {
     padding: 30,
-    fontFamily: 'Helvetica',
+    fontFamily: 'Times-Roman',
     backgroundColor: '#FFFFFF',
   },
   header: {
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
     color: '#34296A',
     marginBottom: 3,
   },
@@ -45,12 +45,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#34296A',
     marginBottom: 3,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
   },
   scoreValue: {
     fontSize: 32,
     color: '#009DB9',
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
     marginBottom: 0,
   },
   scoreMax: {
@@ -61,14 +61,14 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#34296A',
     marginTop: 4,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
   },
   section: {
     marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 13,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
     color: '#34296A',
     marginBottom: 8,
     borderBottom: 1.5,
@@ -93,20 +93,20 @@ const styles = StyleSheet.create({
   heatmapHeaderText: {
     color: '#FFFFFF',
     fontSize: 10,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
   },
   domainCell: {
     width: '40%',
     paddingRight: 8,
     fontSize: 9.5,
     color: '#333333',
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
   },
   scoreCell: {
     width: '15%',
     textAlign: 'center',
     fontSize: 9.5,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
   },
   gapCell: {
     width: '15%',
@@ -139,17 +139,17 @@ const styles = StyleSheet.create({
   },
   domainTitle: {
     fontSize: 15,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
     color: '#34296A',
   },
   domainScore: {
     fontSize: 11,
     color: '#009DB9',
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
   },
   subsectionTitle: {
     fontSize: 10.5,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
     color: '#111827',
     marginBottom: 5,
     marginTop: 0,
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   ctaTitle: {
     fontSize: 12,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
     color: '#FFFFFF',
     marginBottom: 6,
   },
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   ctaButtonText: {
     color: '#FFFFFF',
     fontSize: 9.5,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Times-Bold',
   },
   footer: {
     borderTop: 1,
@@ -372,11 +372,11 @@ const ExitReadinessPDF = ({ domainData, overallScore, userEmail, userName }) => 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Key Insights</Text>
           <Text style={styles.analysisText}>
-            <Text style={{ fontFamily: 'Helvetica-Bold' }}>Strongest Area: </Text>
+            <Text style={{ fontFamily: 'Times-Bold' }}>Strongest Area: </Text>
             {domainData.reduce((max, d) => d.score > max.score ? d : max).domain} ({domainData.reduce((max, d) => d.score > max.score ? d : max).displayScore})
           </Text>
           <Text style={styles.analysisText}>
-            <Text style={{ fontFamily: 'Helvetica-Bold' }}>Biggest Opportunity: </Text>
+            <Text style={{ fontFamily: 'Times-Bold' }}>Biggest Opportunity: </Text>
             {domainData.reduce((min, d) => d.score < min.score ? d : min).domain} ({domainData.reduce((min, d) => d.score < min.score ? d : min).displayScore})
           </Text>
         </View>

@@ -433,20 +433,64 @@ const ExitReadinessScorecard = () => {
     return (
       <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: isMobile ? '1.5rem' : '3rem' }}>
         <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
+          {/* Logo Header */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+            <img 
+              src="/legacy-dna-logo.png" 
+              alt="Legacy DNA" 
+              style={{ 
+                height: isMobile ? '50px' : '60px',
+                width: 'auto',
+                objectFit: 'contain'
+              }} 
+            />
+          </div>
+
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <div style={{ display: 'inline-block', padding: '0.5rem 1rem', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: '600', marginBottom: '1rem', backgroundColor: '#E2EEF2', color: '#34296A' }}>
+            <div style={{ 
+              display: 'inline-block', 
+              padding: '0.5rem 1rem', 
+              borderRadius: '9999px', 
+              fontSize: '0.875rem', 
+              fontWeight: '600', 
+              marginBottom: '1rem', 
+              backgroundColor: '#E2EEF2', 
+              color: '#34296A',
+              fontFamily: 'Georgia, "Times New Roman", serif'
+            }}>
               For PE-Backed & Mid-Market Healthtech CEOs
             </div>
-            <h1 style={{ fontSize: isMobile ? '2.25rem' : '3.75rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#34296A' }}>
+            <h1 style={{ 
+              fontSize: isMobile ? '2.5rem' : '4rem', 
+              fontWeight: 'bold', 
+              marginBottom: '1.5rem', 
+              color: '#34296A',
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              lineHeight: '1.2'
+            }}>
               Are You Exit Ready?
             </h1>
-            <p style={{ fontSize: isMobile ? '1.125rem' : '1.5rem', color: '#374151', marginBottom: '2rem', maxWidth: '48rem', margin: '0 auto' }}>
+            <p style={{ 
+              fontSize: isMobile ? '1.25rem' : '1.625rem', 
+              color: '#374151', 
+              marginBottom: '2rem', 
+              maxWidth: '48rem', 
+              margin: '0 auto',
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              lineHeight: '1.5'
+            }}>
               In 5-7 minutes, see how your company stacks up against what premium buyers look for - and what gaps might be costing you millions.
             </p>
           </div>
 
           <div style={{ backgroundColor: 'white', borderRadius: '1rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: isMobile ? '1.5rem' : '3rem', marginBottom: '2rem' }}>
-            <p style={{ fontSize: '1.125rem', color: '#374151', marginBottom: '2rem' }}>
+            <p style={{ 
+              fontSize: '1.125rem', 
+              color: '#374151', 
+              marginBottom: '2rem',
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              lineHeight: '1.6'
+            }}>
               If you're planning to exit in the next 12-36 months, your brand clarity, market position, and growth story can make or break your valuation. The <strong>Exit Readiness Scorecard™</strong> reveals where you're strong, where you're vulnerable, and what to fix before you enter the deal room.
             </p>
 
@@ -476,8 +520,8 @@ const ExitReadinessScorecard = () => {
                   <Target style={{ width: '1.5rem', height: '1.5rem', color: '#009DB9' }} />
                 </div>
                 <div>
-                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem' }}>Benchmarked against buyer expectations</h3>
-                  <p style={{ color: '#6B7280', fontSize: '0.875rem' }}>Compare your readiness to real exits and acquisition standards</p>
+                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontFamily: 'Georgia, "Times New Roman", serif' }}>Benchmarked against buyer expectations</h3>
+                  <p style={{ color: '#6B7280', fontSize: '0.875rem', fontFamily: 'Georgia, "Times New Roman", serif' }}>Compare your readiness to real exits and acquisition standards</p>
                 </div>
               </div>
 
@@ -486,8 +530,8 @@ const ExitReadinessScorecard = () => {
                   <CheckCircle style={{ width: '1.5rem', height: '1.5rem', color: '#009DB9' }} />
                 </div>
                 <div>
-                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem' }}>Built for healthtech and pharmacy leaders</h3>
-                  <p style={{ color: '#6B7280', fontSize: '0.875rem' }}>Based on real exits and proven market strategies</p>
+                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontFamily: 'Georgia, "Times New Roman", serif' }}>Built for healthtech and pharmacy leaders</h3>
+                  <p style={{ color: '#6B7280', fontSize: '0.875rem', fontFamily: 'Georgia, "Times New Roman", serif' }}>Based on real exits and proven market strategies</p>
                 </div>
               </div>
             </div>
@@ -542,13 +586,26 @@ const ExitReadinessScorecard = () => {
     return (
       <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: '1rem' }}>
         <div style={{ maxWidth: '64rem', margin: '0 auto' }}>
+          {/* Logo Header */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem', paddingTop: '1rem' }}>
+            <img 
+              src="/legacy-dna-logo.png" 
+              alt="Legacy DNA" 
+              style={{ 
+                height: isMobile ? '40px' : '50px',
+                width: 'auto',
+                objectFit: 'contain'
+              }} 
+            />
+          </div>
+
           <div style={{ background: 'linear-gradient(to right, #14b8a6, #06b6d4)', color: 'white', borderRadius: '0.75rem', padding: '1rem', marginBottom: '1.5rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                 <Mail style={{ width: '1.5rem', height: '1.5rem', marginRight: '0.75rem', flexShrink: 0 }} />
                 <div>
-                  <p style={{ fontWeight: '600' }}>Download Your PDF Report</p>
-                  <p style={{ fontSize: '0.875rem', color: '#ccfbf1' }}>Get your complete Exit Readiness Report as a PDF</p>
+                  <p style={{ fontWeight: '600', fontFamily: 'Georgia, "Times New Roman", serif' }}>Download Your PDF Report</p>
+                  <p style={{ fontSize: '0.875rem', color: '#ccfbf1', fontFamily: 'Georgia, "Times New Roman", serif' }}>Get your complete Exit Readiness Report as a PDF</p>
                 </div>
               </div>
               <button
@@ -578,53 +635,113 @@ const ExitReadinessScorecard = () => {
           </div>
 
           <div style={{ backgroundColor: 'white', borderRadius: '1rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: isMobile ? '1.5rem' : '2rem', marginBottom: '1.5rem' }}>
-            <h1 style={{ fontSize: isMobile ? '1.5rem' : '1.875rem', fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>Your Complete Exit Readiness Report</h1>
-            <p style={{ color: '#6B7280', marginBottom: '2rem' }}>Here's your detailed analysis of how your brand, story, and market presence stack up against what buyers look for at exit.</p>
+            <h1 style={{ 
+              fontSize: isMobile ? '1.75rem' : '2.25rem', 
+              fontWeight: 'bold', 
+              color: '#111827', 
+              marginBottom: '0.5rem',
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              lineHeight: '1.2'
+            }}>Your Complete Exit Readiness Report</h1>
+            <p style={{ 
+              color: '#6B7280', 
+              marginBottom: '2rem',
+              fontSize: isMobile ? '1rem' : '1.125rem',
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              lineHeight: '1.6'
+            }}>Here's your detailed analysis of how your brand, story, and market presence stack up against what buyers look for at exit.</p>
 
             <div style={{ borderRadius: '0.75rem', padding: '2rem', color: 'white', marginBottom: '2rem', background: 'linear-gradient(135deg, #34296A 0%, #4E72B8 100%)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
                 <div>
-                  <p style={{ color: '#ddd6fe', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>Exit Readiness Score</p>
-                  <p style={{ fontSize: '3.75rem', fontWeight: 'bold' }}>{analysis.overallScore}</p>
-                  <p style={{ color: '#ddd6fe', marginTop: '0.5rem' }}>out of 100</p>
-                  <p style={{ color: 'white', fontWeight: '600', marginTop: '0.75rem', fontSize: '1.25rem' }}>{getScoreCategory(analysis.overallScore)}</p>
-                  <p style={{ color: '#ddd6fe', fontSize: '0.875rem', marginTop: '0.5rem' }}>{getScoreInterpretation(analysis.overallScore)}</p>
+                  <p style={{ 
+                    color: '#ddd6fe', 
+                    fontSize: '0.875rem', 
+                    textTransform: 'uppercase', 
+                    letterSpacing: '0.05em', 
+                    marginBottom: '0.5rem',
+                    fontFamily: 'Georgia, "Times New Roman", serif'
+                  }}>Exit Readiness Score</p>
+                  <p style={{ 
+                    fontSize: '3.75rem', 
+                    fontWeight: 'bold',
+                    fontFamily: 'Georgia, "Times New Roman", serif'
+                  }}>{analysis.overallScore}</p>
+                  <p style={{ 
+                    color: '#ddd6fe', 
+                    marginTop: '0.5rem',
+                    fontFamily: 'Georgia, "Times New Roman", serif'
+                  }}>out of 100</p>
+                  <p style={{ 
+                    color: 'white', 
+                    fontWeight: '600', 
+                    marginTop: '0.75rem', 
+                    fontSize: '1.25rem',
+                    fontFamily: 'Georgia, "Times New Roman", serif'
+                  }}>{getScoreCategory(analysis.overallScore)}</p>
+                  <p style={{ 
+                    color: '#ddd6fe', 
+                    fontSize: '0.875rem', 
+                    marginTop: '0.5rem',
+                    fontFamily: 'Georgia, "Times New Roman", serif',
+                    lineHeight: '1.5'
+                  }}>{getScoreInterpretation(analysis.overallScore)}</p>
                 </div>
                 <TrendingUp style={{ width: '6rem', height: '6rem', opacity: 0.2 }} />
               </div>
             </div>
 
             <div style={{ borderRadius: '0.75rem', padding: '1.5rem', marginBottom: '2rem', backgroundColor: '#E2EEF2' }}>
-              <p style={{ color: '#374151', marginBottom: '0.5rem' }}>
+              <p style={{ 
+                color: '#374151', 
+                marginBottom: '0.5rem',
+                fontSize: '1rem',
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                lineHeight: '1.6'
+              }}>
                 <strong>Your strongest area is {analysis.strongest.domain} ({analysis.strongest.displayScore})</strong>, and your biggest opportunity is <strong>{analysis.weakest.domain} ({analysis.weakest.displayScore})</strong>.
               </p>
-              <p style={{ color: '#374151' }}>
+              <p style={{ 
+                color: '#374151',
+                fontSize: '1rem',
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                lineHeight: '1.6'
+              }}>
                 Below, see how your company compares to top performers in each domain - and what you can do to close the gaps.
               </p>
             </div>
 
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827', marginBottom: '1rem' }}>Exit Readiness Scorecard™</h2>
+            <h2 style={{ 
+              fontSize: '1.75rem', 
+              fontWeight: 'bold', 
+              color: '#111827', 
+              marginBottom: '1rem',
+              fontFamily: 'Georgia, "Times New Roman", serif'
+            }}>Exit Readiness Scorecard™</h2>
             <div style={{ overflowX: 'auto', marginBottom: '2rem' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                    <th style={{ textAlign: 'left', padding: '0.75rem 1rem', fontWeight: '600', color: '#374151' }}>Domain</th>
-                    <th style={{ textAlign: 'center', padding: '0.75rem 1rem', fontWeight: '600', color: '#374151' }}>Your Score</th>
-                    <th style={{ textAlign: 'center', padding: '0.75rem 1rem', fontWeight: '600', color: '#374151' }}>Gap to 5</th>
-                    <th style={{ textAlign: 'left', padding: '0.75rem 1rem', fontWeight: '600', color: '#374151' }}>Buyer Signal</th>
-                    <th style={{ textAlign: 'left', padding: '0.75rem 1rem', fontWeight: '600', color: '#374151' }}>Risk if Weak</th>
+                    <th style={{ textAlign: 'left', padding: '0.75rem 1rem', fontWeight: '600', color: '#374151', fontFamily: 'Georgia, "Times New Roman", serif' }}>Domain</th>
+                    <th style={{ textAlign: 'center', padding: '0.75rem 1rem', fontWeight: '600', color: '#374151', fontFamily: 'Georgia, "Times New Roman", serif' }}>Your Score</th>
+                    <th style={{ textAlign: 'center', padding: '0.75rem 1rem', fontWeight: '600', color: '#374151', fontFamily: 'Georgia, "Times New Roman", serif' }}>Gap to 5</th>
+                    <th style={{ textAlign: 'left', padding: '0.75rem 1rem', fontWeight: '600', color: '#374151', fontFamily: 'Georgia, "Times New Roman", serif' }}>Buyer Signal</th>
+                    <th style={{ textAlign: 'left', padding: '0.75rem 1rem', fontWeight: '600', color: '#374151', fontFamily: 'Georgia, "Times New Roman", serif' }}>Risk if Weak</th>
                   </tr>
                 </thead>
                 <tbody>
                   {analysis.domainData.map((domain, idx) => (
                     <tr key={idx} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                      <td style={{ padding: '1rem', fontWeight: '500', color: '#111827' }}>{domain.domain}</td>
+                      <td style={{ padding: '1rem', fontWeight: '500', color: '#111827', fontFamily: 'Georgia, "Times New Roman", serif', fontSize: '1rem' }}>
+                        {idx + 1}. {domain.domain}
+                      </td>
                       <td style={{ padding: '1rem', textAlign: 'center' }}>
                         <span style={{ 
                           display: 'inline-block', 
                           padding: '0.25rem 0.75rem', 
                           borderRadius: '9999px', 
                           fontWeight: 'bold',
+                          fontFamily: 'Georgia, "Times New Roman", serif',
                           ...getScoreColor(domain.score)
                         }}>
                           {domain.displayScore}
@@ -642,11 +759,11 @@ const ExitReadinessScorecard = () => {
                               }}
                             ></div>
                           </div>
-                          <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#374151' }}>{domain.gap.toFixed(1)}</span>
+                          <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#374151', fontFamily: 'Georgia, "Times New Roman", serif' }}>{domain.gap.toFixed(1)}</span>
                         </div>
                       </td>
-                      <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6B7280' }}>{domain.buyerSignal}</td>
-                      <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6B7280' }}>{domain.risk}</td>
+                      <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6B7280', fontFamily: 'Georgia, "Times New Roman", serif', lineHeight: '1.5' }}>{domain.buyerSignal}</td>
+                      <td style={{ padding: '1rem', fontSize: '0.875rem', color: '#6B7280', fontFamily: 'Georgia, "Times New Roman", serif', lineHeight: '1.5' }}>{domain.risk}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -655,14 +772,50 @@ const ExitReadinessScorecard = () => {
 
             {analysis.domainData.map((domain, idx) => {
               const bioPlus = getBioPlus(domain.domain);
+              // Different colors for each domain to create visual differentiation
+              const domainColors = [
+                '#009DB9', // Teal for Customer Clarity
+                '#8B5CF6', // Purple for Messaging Strength
+                '#F59E0B', // Amber for Brand Positioning
+                '#EF4444', // Red for Corporate Story
+                '#10B981'  // Green for Market Presence
+              ];
+              const domainColor = domainColors[idx % domainColors.length];
+              
               return (
                 <div key={idx} style={{ marginBottom: '2rem', paddingBottom: '2rem', borderBottom: idx < analysis.domainData.length - 1 ? '1px solid #e5e7eb' : 'none' }}>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827', marginBottom: '1rem' }}>{domain.domain}</h3>
-                  <p style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', color: '#34296A' }}>Your Score: {domain.displayScore}</p>
+                  <h3 style={{ 
+                    fontSize: '1.75rem', 
+                    fontWeight: 'bold', 
+                    color: domainColor, 
+                    marginBottom: '1rem',
+                    fontFamily: 'Georgia, "Times New Roman", serif'
+                  }}>
+                    {idx + 1}. {domain.domain}
+                  </h3>
+                  <p style={{ 
+                    fontSize: '1.125rem', 
+                    fontWeight: '600', 
+                    marginBottom: '1rem', 
+                    color: '#34296A',
+                    fontFamily: 'Georgia, "Times New Roman", serif'
+                  }}>Your Score: {domain.displayScore}</p>
                   
                   <div style={{ marginBottom: '1.5rem' }}>
-                    <h4 style={{ fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>Why This Matters for Exit:</h4>
-                    <p style={{ color: '#374151', marginBottom: '1rem' }}>
+                    <h4 style={{ 
+                      fontWeight: 'bold', 
+                      color: '#111827', 
+                      marginBottom: '0.5rem',
+                      fontSize: '1.125rem',
+                      fontFamily: 'Georgia, "Times New Roman", serif'
+                    }}>Why This Matters for Exit:</h4>
+                    <p style={{ 
+                      color: '#374151', 
+                      marginBottom: '1rem',
+                      fontSize: '1rem',
+                      fontFamily: 'Georgia, "Times New Roman", serif',
+                      lineHeight: '1.7'
+                    }}>
                       {domain.domain === 'Customer Clarity' && "Buyers pay premiums for companies that dominate specific segments, not those that serve \"everyone.\" When you can prove you own a segment - with documented personas, validated buying criteria, and segment-specific strategies - you eliminate buyer concerns about market risk."}
                       {domain.domain === 'Messaging Strength' && "When buyers conduct diligence, they interview your team, customers, and partners. If those conversations reveal inconsistent or unclear messaging, it signals weak leadership alignment and market confusion - both of which destroy valuation. Companies with crisp, validated messaging close deals 30% faster and command higher multiples."}
                       {domain.domain === 'Brand Positioning' && "Buyers research you long before they reach out. If you're not appearing in search results, industry publications, or analyst reports, you're losing deals before conversations start. Category leaders get inbound interest and premium multiples. Followers get commoditized offers."}
@@ -672,27 +825,79 @@ const ExitReadinessScorecard = () => {
                   </div>
 
                   <div style={{ borderRadius: '0.75rem', padding: '1.5rem', marginBottom: '1.5rem', backgroundColor: '#E2EEF2' }}>
-                    <h4 style={{ fontWeight: 'bold', color: '#111827', marginBottom: '0.75rem' }}>What Top Performers Do: The BioPlus Story</h4>
-                    <p style={{ color: '#374151', marginBottom: '0.75rem' }}>{bioPlus.challenge}</p>
-                    <p style={{ color: '#374151' }}>{bioPlus.results}</p>
+                    <h4 style={{ 
+                      fontWeight: 'bold', 
+                      color: '#111827', 
+                      marginBottom: '0.75rem',
+                      fontSize: '1.125rem',
+                      fontFamily: 'Georgia, "Times New Roman", serif'
+                    }}>What Top Performers Do: The BioPlus Story</h4>
+                    <p style={{ 
+                      color: '#374151', 
+                      marginBottom: '0.75rem',
+                      fontSize: '1rem',
+                      fontFamily: 'Georgia, "Times New Roman", serif',
+                      lineHeight: '1.6'
+                    }}>{bioPlus.challenge}</p>
+                    <p style={{ 
+                      color: '#374151',
+                      fontSize: '1rem',
+                      fontFamily: 'Georgia, "Times New Roman", serif',
+                      lineHeight: '1.6'
+                    }}>{bioPlus.results}</p>
                   </div>
 
                   <div style={{ backgroundColor: '#f9fafb', borderRadius: '0.75rem', padding: '1.5rem' }}>
-                    <h4 style={{ fontWeight: 'bold', color: '#111827', marginBottom: '0.75rem' }}>Your Opportunity:</h4>
-                    <p style={{ color: '#374151' }}>{getDomainOpportunity(domain.domain, domain.score)}</p>
+                    <h4 style={{ 
+                      fontWeight: 'bold', 
+                      color: '#111827', 
+                      marginBottom: '0.75rem',
+                      fontSize: '1.125rem',
+                      fontFamily: 'Georgia, "Times New Roman", serif'
+                    }}>Your Opportunity:</h4>
+                    <p style={{ 
+                      color: '#374151',
+                      fontSize: '1rem',
+                      fontFamily: 'Georgia, "Times New Roman", serif',
+                      lineHeight: '1.6'
+                    }}>{getDomainOpportunity(domain.domain, domain.score)}</p>
                   </div>
                 </div>
               );
             })}
 
             <div style={{ marginTop: '3rem' }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827', marginBottom: '1rem' }}>Turn Insight Into Action</h3>
-              <p style={{ color: '#374151', marginBottom: '1.5rem' }}>You now know where you stand - and where you're vulnerable. The next step is turning these insights into a roadmap that strengthens your position and increases what buyers will pay.</p>
+              <h3 style={{ 
+                fontSize: '1.75rem', 
+                fontWeight: 'bold', 
+                color: '#111827', 
+                marginBottom: '1rem',
+                fontFamily: 'Georgia, "Times New Roman", serif'
+              }}>Turn Insight Into Action</h3>
+              <p style={{ 
+                color: '#374151', 
+                marginBottom: '1.5rem',
+                fontSize: '1rem',
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                lineHeight: '1.6'
+              }}>You now know where you stand - and where you're vulnerable. The next step is turning these insights into a roadmap that strengthens your position and increases what buyers will pay.</p>
               
               <div style={{ marginBottom: '1rem' }}>
                 <div style={{ border: '2px solid #34296A', borderRadius: '0.75rem', padding: '1.5rem', marginBottom: '1rem' }}>
-                  <h4 style={{ fontWeight: 'bold', fontSize: '1.125rem', marginBottom: '0.5rem', color: '#34296A' }}>Book My Exit Readiness Diagnostic™</h4>
-                  <p style={{ color: '#6B7280', fontSize: '0.875rem', marginBottom: '1rem' }}>Get 2 growth levers and 1 red flag personalized to your company - 30 minutes, zero obligation</p>
+                  <h4 style={{ 
+                    fontWeight: 'bold', 
+                    fontSize: '1.125rem', 
+                    marginBottom: '0.5rem', 
+                    color: '#34296A',
+                    fontFamily: 'Georgia, "Times New Roman", serif'
+                  }}>Book My Exit Readiness Diagnostic™</h4>
+                  <p style={{ 
+                    color: '#6B7280', 
+                    fontSize: '0.875rem', 
+                    marginBottom: '1rem',
+                    fontFamily: 'Georgia, "Times New Roman", serif',
+                    lineHeight: '1.5'
+                  }}>Get 2 growth levers and 1 red flag personalized to your company - 30 minutes, zero obligation</p>
                   <a 
                     href="https://calendly.com/drroxietime/exit-readiness-diagnostic"
                     target="_blank"
@@ -714,8 +919,20 @@ const ExitReadinessScorecard = () => {
                 </div>
 
                 <div style={{ border: '2px solid #009DB9', borderRadius: '0.75rem', padding: '1.5rem' }}>
-                  <h4 style={{ fontWeight: 'bold', fontSize: '1.125rem', marginBottom: '0.5rem', color: '#009DB9' }}>Explore the Exit Readiness Sprint™</h4>
-                  <p style={{ color: '#6B7280', fontSize: '0.875rem', marginBottom: '1rem' }}>See how we help healthtech leaders close readiness gaps in 90 days</p>
+                  <h4 style={{ 
+                    fontWeight: 'bold', 
+                    fontSize: '1.125rem', 
+                    marginBottom: '0.5rem', 
+                    color: '#009DB9',
+                    fontFamily: 'Georgia, "Times New Roman", serif'
+                  }}>Explore the Exit Readiness Sprint™</h4>
+                  <p style={{ 
+                    color: '#6B7280', 
+                    fontSize: '0.875rem', 
+                    marginBottom: '1rem',
+                    fontFamily: 'Georgia, "Times New Roman", serif',
+                    lineHeight: '1.5'
+                  }}>See how we help healthtech leaders close readiness gaps in 90 days</p>
                   <a 
                     href="https://www.legacy-dna.com/exit-readiness-sprint"
                     target="_blank"
@@ -924,28 +1141,46 @@ const ExitReadinessScorecard = () => {
           </div>
         </div>
 
+        {/* Logo Header */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+          <img 
+            src="/legacy-dna-logo.png" 
+            alt="Legacy DNA" 
+            style={{ 
+              height: isMobile ? '40px' : '50px',
+              width: 'auto',
+              objectFit: 'contain'
+            }} 
+          />
+        </div>
+
         <div style={{ marginBottom: '2rem' }}>
           <h3 style={{ 
-            fontSize: '0.875rem', 
+            fontSize: isMobile ? '0.9rem' : '1rem', 
             fontWeight: '600', 
             textTransform: 'uppercase', 
             letterSpacing: '0.05em', 
-            marginBottom: '0.5rem',
-            color: '#009DB9'
+            marginBottom: '0.75rem',
+            color: '#009DB9',
+            fontFamily: 'Georgia, "Times New Roman", serif'
           }}>
-            {currentQuestion.domain} • {currentQuestion.title}
+            {currentQuestion.domain}
           </h3>
           <h2 style={{ 
-            fontSize: isMobile ? '1.25rem' : '1.5rem', 
+            fontSize: isMobile ? '1.4rem' : '1.75rem', 
             fontWeight: 'bold', 
             color: '#111827', 
-            marginBottom: '1rem' 
+            marginBottom: '1rem',
+            fontFamily: 'Georgia, "Times New Roman", serif',
+            lineHeight: '1.3'
           }}>
             {currentQuestion.question}
           </h2>
           <p style={{ 
-            fontSize: isMobile ? '0.875rem' : '1rem', 
-            color: '#6B7280' 
+            fontSize: isMobile ? '1rem' : '1.125rem', 
+            color: '#6B7280',
+            fontFamily: 'Georgia, "Times New Roman", serif',
+            lineHeight: '1.6'
           }}>
             {currentQuestion.description}
           </p>
@@ -1002,8 +1237,10 @@ const ExitReadinessScorecard = () => {
                 </span>
                 <span style={{
                   fontWeight: '500',
-                  fontSize: isMobile ? '0.875rem' : '1rem',
-                  color: currentAnswer === option.value ? '#111827' : '#374151'
+                  fontSize: isMobile ? '1rem' : '1.125rem',
+                  color: currentAnswer === option.value ? '#111827' : '#374151',
+                  fontFamily: 'Georgia, "Times New Roman", serif',
+                  lineHeight: '1.5'
                 }}>
                   {option.label}
                 </span>

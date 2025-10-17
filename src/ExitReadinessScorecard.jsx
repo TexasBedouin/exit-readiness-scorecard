@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, CheckCircle, TrendingUp, Lock, Mail, Download, Clock, BarChart3, Target } from 'lucide-react';
-import { pdf } from '@react-pdf/renderer';
-import ExitReadinessPDF from './ExitReadinessPDF';
+import html2pdf from 'html2pdf.js';
+
 
 const ExitReadinessScorecard = () => {
   const [screen, setScreen] = useState('welcome');
@@ -18,37 +18,62 @@ const ExitReadinessScorecard = () => {
     marketPresence1: 0,
     marketPresence2: 0
   });
+  const resultsRef = useRef(null);
   const [email, setEmail] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleDownloadPDF = async () => {
-    setIsGeneratingPDF(true);
-    try {
-      const analysis = getAnalysis();
-      const blob = await pdf(
-        <ExitReadinessPDF 
-          domainData={analysis.domainData}
-          overallScore={analysis.overallScore}
-          userEmail={email}
-          userName=""
-        />
-      ).toBlob();
-      
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `Exit-Readiness-Report-${Date.now()}.pdf`;
-      link.click();
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('There was an error generating your PDF. Please try again.');
-    } finally {
-      setIsGeneratingPDF(false);
+const handleDownloadPDF = async () => {
+  setIsGeneratingPDF(true);
+  try {
+    // Get the results content
+    const element = resultsRef.current;
+    
+    // Clone the element to modify it without affecting the display
+    const clone = element.cloneNode(true);
+    
+    // Remove the download button banner from the PDF
+    const downloadBanner = clone.querySelector('[data-pdf-exclude]');
+    if (downloadBanner) {
+      downloadBanner.remove();
     }
-  };
+    
+    // Configure html2pdf options
+    const opt = {
+      margin: [0.5, 0.5, 0.5, 0.5],
+      filename: `Exit-Readiness-Report-${Date.now()}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        letterRendering: true,
+        backgroundColor: '#ffffff'
+      },
+      jsPDF: { 
+        unit: 'in', 
+        format: 'letter', 
+        orientation: 'portrait'
+      },
+      pagebreak: { 
+        mode: ['avoid-all', 'css', 'legacy'],
+        before: '.pdf-page-break-before',
+        after: '.pdf-page-break-after',
+        avoid: '.pdf-avoid-break'
+      }
+    };
+    
+    // Generate PDF
+    await html2pdf().set(opt).from(clone).save();
+    
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    alert('There was an error generating your PDF. Please try again.');
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
 
   // Updated function: Generate PDF, upload to R2, submit to ActiveCampaign
   const handleSubmitToBackend = async () => {
@@ -643,7 +668,7 @@ const ExitReadinessScorecard = () => {
             </div>
           </div>
 
-          <div style={{ backgroundColor: 'white', borderRadius: '1rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: isMobile ? '1.5rem' : '2rem', marginBottom: '1.5rem' }}>
+          <div ref={resultsRef} style={{ backgroundColor: 'white', borderRadius: '1rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: isMobile ? '1.5rem' : '2rem', marginBottom: '1.5rem' }}>
             <h1 style={{ 
               fontSize: isMobile ? '1.75rem' : '2.25rem', 
               fontWeight: 'bold', 

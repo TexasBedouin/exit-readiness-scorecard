@@ -75,7 +75,7 @@ const handleDownloadPDF = async () => {
   }
 };
 
-  // Updated function: Submit scores to ActiveCampaign (PDF generated separately by user)
+  // Updated function: Generate PDF, upload to R2, and submit to ActiveCampaign
   const handleSubmitToBackend = async () => {
     setIsSubmitting(true);
   
@@ -83,9 +83,90 @@ const handleDownloadPDF = async () => {
       // Step 1: Generate the analysis data
       const analysis = getAnalysis();
       
-      // Step 2: Send to Netlify function
-      console.log('📤 Submitting to ActiveCampaign...');
+      console.log('📄 Generating PDF...');
       
+      // Step 2: Generate PDF as blob using html2pdf
+      const element = document.createElement('div');
+      element.style.width = '8.5in';
+      element.style.padding = '0.5in';
+      element.style.backgroundColor = 'white';
+      
+      // Create a simplified PDF-friendly version of the results
+      element.innerHTML = `
+        <div style="font-family: Georgia, serif;">
+          <h1 style="color: #34296A; margin-bottom: 20px;">Exit Readiness Report</h1>
+          <p style="color: #374151; font-size: 14px; margin-bottom: 30px;">Generated for: ${email}</p>
+          
+          <div style="background: linear-gradient(135deg, #34296A 0%, #4E72B8 100%); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px;">
+            <p style="font-size: 12px; text-transform: uppercase; color: #ddd6fe; margin-bottom: 10px;">Exit Readiness Score</p>
+            <p style="font-size: 48px; font-weight: bold; margin: 10px 0;">${analysis.overallScore}</p>
+            <p style="font-size: 14px; color: #ddd6fe;">out of 100</p>
+            <p style="font-size: 18px; font-weight: bold; margin-top: 15px;">${getScoreCategory(analysis.overallScore)}</p>
+          </div>
+          
+          <h2 style="color: #34296A; font-size: 24px; margin-bottom: 20px;">Domain Scores</h2>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            <thead>
+              <tr style="border-bottom: 2px solid #e5e7eb;">
+                <th style="text-align: left; padding: 10px; font-weight: 600; color: #374151;">Domain</th>
+                <th style="text-align: center; padding: 10px; font-weight: 600; color: #374151;">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${analysis.domainData.map(domain => `
+                <tr style="border-bottom: 1px solid #f3f4f6;">
+                  <td style="padding: 12px; color: #111827;">${domain.domain}</td>
+                  <td style="padding: 12px; text-align: center; font-weight: bold; color: #34296A;">${domain.displayScore}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 40px; padding: 20px; background: #f9fafb; border-radius: 10px;">
+            <h3 style="color: #34296A; font-size: 18px; margin-bottom: 10px;">About Legacy DNA</h3>
+            <p style="color: #374151; font-size: 12px; line-height: 1.6;">
+              Legacy DNA specializes in helping PE-backed healthtech CEOs maximize exit value through strategic positioning, 
+              messaging clarity, and market presence optimization.
+            </p>
+          </div>
+          
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center; color: #6B7280; font-size: 10px;">
+            <p>© 2025 Legacy DNA | Growth for Health Innovators | www.legacy-dna.com</p>
+            <p style="margin-top: 5px; font-style: italic;">Report generated for: ${email}</p>
+          </div>
+        </div>
+      `;
+      
+      // Generate PDF using html2pdf
+      const pdfBlob = await html2pdf()
+        .set({
+          margin: 0,
+          filename: `Exit-Readiness-Report-${Date.now()}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        })
+        .from(element)
+        .outputPdf('blob');
+      
+      console.log('✅ PDF generated');
+      console.log('📦 Converting PDF to base64...');
+      
+      // Step 3: Convert blob to base64
+      const reader = new FileReader();
+      const pdfBase64 = await new Promise((resolve, reject) => {
+        reader.onload = () => {
+          const base64 = reader.result.split(',')[1]; // Remove data URL prefix
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(pdfBlob);
+      });
+      
+      console.log('✅ PDF converted to base64');
+      console.log('📤 Uploading to R2 and submitting to ActiveCampaign...');
+      
+      // Step 4: Send to Netlify function with PDF
       const response = await fetch('/.netlify/functions/submit-scorecard', {
         method: 'POST',
         headers: {
@@ -94,10 +175,7 @@ const handleDownloadPDF = async () => {
         body: JSON.stringify({
           email: email,
           overallScore: analysis.overallScore,
-          domainScores: analysis.domainData.map(d => ({
-            domain: d.domain,
-            score: d.score
-          }))
+          pdfBase64: pdfBase64
         }),
       });
 
@@ -109,6 +187,9 @@ const handleDownloadPDF = async () => {
 
       console.log('✅ Success!');
       console.log('👤 ActiveCampaign Contact ID:', result.contactId);
+      if (result.pdfUrl) {
+        console.log('📄 PDF URL:', result.pdfUrl);
+      }
 
     } catch (error) {
       console.error('❌ Error submitting to backend:', error);

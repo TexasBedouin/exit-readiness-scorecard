@@ -21,6 +21,8 @@ const ExitReadinessScorecard = () => {
   const [email, setEmail] = useState('');
   const [isMobile, setIsMobile] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState('');
 
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);
@@ -49,40 +51,71 @@ const ExitReadinessScorecard = () => {
     }
   };
 
-  // Updated function: Submit to ActiveCampaign with proper JSON format
+  // Updated function: Generate PDF, upload to R2, submit to ActiveCampaign
   const handleSubmitToBackend = async () => {
+    setIsSubmitting(true);
+  
     try {
-      // Generate the analysis data
+      // Step 1: Generate the analysis data
       const analysis = getAnalysis();
       
-      // Get the current page URL as the survey URL
-      const surveyUrl = window.location.origin || 'https://exit-readiness-scorecard.netlify.app';
+      // Step 2: Generate PDF
+      console.log('📄 Generating PDF...');
+      const pdfBlob = await pdf(
+        <ExitReadinessPDF 
+          domainData={analysis.domainData}
+          overallScore={analysis.overallScore}
+          userEmail={email}
+          userName=""
+        />
+      ).toBlob();
 
-      // Send to Netlify function with JSON payload
+      // Step 3: Convert PDF to base64
+      console.log('📄 Converting PDF to base64...');
+      const base64PDF = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result.split(',')[1]; // Remove data URL prefix
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(pdfBlob);
+      });
+
+      // Step 4: Send to Netlify function WITH PDF
+      console.log('📤 Uploading PDF and submitting to ActiveCampaign...');
+      
       const response = await fetch('/.netlify/functions/submit-scorecard', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email,
+          email: email,
           overallScore: analysis.overallScore,
-          surveyUrl: surveyUrl
-        })
+          pdfBase64: base64PDF  // ✅ Sending actual PDF!
+        }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Failed to submit scorecard:', errorData);
-        throw new Error(errorData.details || 'Failed to submit scorecard');
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Failed to submit');
       }
 
-      const result = await response.json();
-      console.log('Scorecard submitted successfully:', result);
+      console.log('✅ Success!');
+      console.log('📄 PDF URL from R2:', result.pdfUrl);
+      console.log('👤 ActiveCampaign Contact ID:', result.contactId);
+      
+      // Store the PDF URL
+      setPdfUrl(result.pdfUrl);
 
     } catch (error) {
-      console.error('Error submitting to backend:', error);
-      // Don't block the user flow - they can still see results
+      console.error('❌ Error submitting to backend:', error);
+      alert('There was an error submitting your information. Please try again.');
+      throw error; // Re-throw so the caller knows it failed
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -378,10 +411,10 @@ const ExitReadinessScorecard = () => {
     const stories = {
       'Customer Clarity': {
         challenge: "BioPlus Specialty Pharmacy faced exactly this challenge. They were serving \"patients\" - which meant competing with every pharmacy in America. Working with Legacy DNA, they identified three high-value segments: oncology patients needing rapid access, specialty providers requiring seamless integration, and pharma partners seeking distribution excellence.",
-        results: "By tailoring their approach to each segment, BioPlus achieved: #1 ranking in oncology specialty pharmacy care (by both patients and prescribers), Named one of Money Magazine's 5 Best Online Pharmacies - the only specialty pharmacy ever chosen, and 78,000 â†' 325,000 dispenses in seven years (22.5% CAGR). They went from commodity player to category leader - and sold twice at premium multiples."
+        results: "By tailoring their approach to each segment, BioPlus achieved: #1 ranking in oncology specialty pharmacy care (by both patients and prescribers), Named one of Money Magazine's 5 Best Online Pharmacies - the only specialty pharmacy ever chosen, and 78,000 → 325,000 dispenses in seven years (22.5% CAGR). They went from commodity player to category leader - and sold twice at premium multiples."
       },
       'Messaging Strength': {
-        challenge: "BioPlus had a powerful service but couldn't articulate what made them different. Legacy DNA worked with their leadership to create The Power of 2â„¢: 2-Hour Patient Acceptance Guaranteeâ„¢, 2-Day Ready to Shipâ„¢, 2-Click Refillsâ„¢ - all anchored by a vision to \"heal the world 2gether.\" This wasn't just a tagline - it became the operational rallying cry. Every employee, every customer touchpoint, every sales conversation reinforced the same message.",
+        challenge: "BioPlus had a powerful service but couldn't articulate what made them different. Legacy DNA worked with their leadership to create The Power of 2™: 2-Hour Patient Acceptance Guarantee™, 2-Day Ready to Ship™, 2-Click Refills™ - all anchored by a vision to \"heal the world 2gether.\" This wasn't just a tagline - it became the operational rallying cry. Every employee, every customer touchpoint, every sales conversation reinforced the same message.",
         results: "The result: 13 consecutive quarters of growth, Revenue doubled from $750M to $2B, and Multiple Gold Aster Awards for creative excellence (top 5% nationally for healthcare marketing). One clear message. Compounding impact."
       },
       'Brand Positioning': {
@@ -418,7 +451,7 @@ const ExitReadinessScorecard = () => {
 
           <div style={{ backgroundColor: 'white', borderRadius: '1rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: isMobile ? '1.5rem' : '3rem', marginBottom: '2rem' }}>
             <p style={{ fontSize: '1.125rem', color: '#374151', marginBottom: '2rem' }}>
-              If you're planning to exit in the next 12-36 months, your brand clarity, market position, and growth story can make or break your valuation. The <strong>Exit Readiness Scorecardâ„¢</strong> reveals where you're strong, where you're vulnerable, and what to fix before you enter the deal room.
+              If you're planning to exit in the next 12-36 months, your brand clarity, market position, and growth story can make or break your valuation. The <strong>Exit Readiness Scorecard™</strong> reveals where you're strong, where you're vulnerable, and what to fix before you enter the deal room.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
@@ -483,7 +516,7 @@ const ExitReadinessScorecard = () => {
                 Start My Exit Readiness Scorecard
                 <ArrowRight style={{ marginLeft: '0.75rem', width: '1.5rem', height: '1.5rem' }} />
               </button>
-              <p style={{ fontSize: '0.875rem', color: '#6B7280', marginTop: '1rem' }}>No credit card required \u2022 Results delivered instantly</p>
+              <p style={{ fontSize: '0.875rem', color: '#6B7280', marginTop: '1rem' }}>No credit card required • Results delivered instantly</p>
             </div>
           </div>
 
@@ -574,7 +607,7 @@ const ExitReadinessScorecard = () => {
               </p>
             </div>
 
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827', marginBottom: '1rem' }}>Exit Readiness Scorecardâ„¢</h2>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827', marginBottom: '1rem' }}>Exit Readiness Scorecard™</h2>
             <div style={{ overflowX: 'auto', marginBottom: '2rem' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
@@ -662,7 +695,7 @@ const ExitReadinessScorecard = () => {
               
               <div style={{ marginBottom: '1rem' }}>
                 <div style={{ border: '2px solid #34296A', borderRadius: '0.75rem', padding: '1.5rem', marginBottom: '1rem' }}>
-                  <h4 style={{ fontWeight: 'bold', fontSize: '1.125rem', marginBottom: '0.5rem', color: '#34296A' }}>Book My Exit Readiness Diagnosticâ„¢</h4>
+                  <h4 style={{ fontWeight: 'bold', fontSize: '1.125rem', marginBottom: '0.5rem', color: '#34296A' }}>Book My Exit Readiness Diagnostic™</h4>
                   <p style={{ color: '#6B7280', fontSize: '0.875rem', marginBottom: '1rem' }}>Get 2 growth levers and 1 red flag personalized to your company - 30 minutes, zero obligation</p>
                   <a 
                     href="https://calendly.com/drroxietime/exit-readiness-diagnostic"
@@ -685,7 +718,7 @@ const ExitReadinessScorecard = () => {
                 </div>
 
                 <div style={{ border: '2px solid #009DB9', borderRadius: '0.75rem', padding: '1.5rem' }}>
-                  <h4 style={{ fontWeight: 'bold', fontSize: '1.125rem', marginBottom: '0.5rem', color: '#009DB9' }}>Explore the Exit Readiness Sprintâ„¢</h4>
+                  <h4 style={{ fontWeight: 'bold', fontSize: '1.125rem', marginBottom: '0.5rem', color: '#009DB9' }}>Explore the Exit Readiness Sprint™</h4>
                   <p style={{ color: '#6B7280', fontSize: '0.875rem', marginBottom: '1rem' }}>See how we help healthtech leaders close readiness gaps in 90 days</p>
                   <a 
                     href="https://www.legacy-dna.com/exit-readiness-sprint"
@@ -776,7 +809,7 @@ const ExitReadinessScorecard = () => {
               <div style={{ position: 'relative' }}>
                 <div style={{ filter: 'blur(4px)', opacity: 0.6, pointerEvents: 'none', userSelect: 'none' }}>
                   <div style={{ backgroundColor: 'white', borderRadius: '0.5rem', padding: '1rem', border: '1px solid #e5e7eb' }}>
-                    <div style={{ fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>Exit Readiness Scorecardâ„¢ Preview</div>
+                    <div style={{ fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>Exit Readiness Scorecard™ Preview</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#f3f4f6', padding: '0.5rem', borderRadius: '0.25rem' }}>
                         <span style={{ fontSize: '0.75rem' }}>Customer Clarity</span>
@@ -819,29 +852,33 @@ const ExitReadinessScorecard = () => {
                 />
                 <button
                   onClick={async () => {
-                    // Submit to backend (ActiveCampaign + R2)
-                    await handleSubmitToBackend();
-                    // Then show full results
-                    setScreen('fullResults');
+                    try {
+                      await handleSubmitToBackend();
+                      setScreen('fullResults');
+                    } catch (error) {
+                      // Error already handled in handleSubmitToBackend
+                      // Don't navigate to results screen if there was an error
+                    }
                   }}
-                  disabled={!email || !email.includes('@')}
+                  disabled={isSubmitting || !email || !email.includes('@')}
                   style={{ 
                     width: '100%',
-                    backgroundColor: email && email.includes('@') ? '#34296A' : '#d1d5db',
+                    backgroundColor: (isSubmitting || !email || !email.includes('@')) ? '#d1d5db' : '#34296A',
                     color: 'white',
                     padding: '1rem 2rem',
                     borderRadius: '0.5rem',
                     fontWeight: '600',
                     fontSize: '1.125rem',
                     border: 'none',
-                    cursor: email && email.includes('@') ? 'pointer' : 'not-allowed',
+                    cursor: (isSubmitting || !email || !email.includes('@')) ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    opacity: isSubmitting ? 0.7 : 1
                   }}
                 >
-                  Show My Full Results
-                  <ArrowRight style={{ marginLeft: '0.5rem', width: '1.5rem', height: '1.5rem' }} />
+                  {isSubmitting ? 'Processing...' : 'Show My Full Results'}
+                  {!isSubmitting && <ArrowRight style={{ marginLeft: '0.5rem', width: '1.5rem', height: '1.5rem' }} />}
                 </button>
                 <p style={{ fontSize: '0.75rem', color: '#6B7280', textAlign: 'center', marginTop: '0.5rem' }}>We'll also send you a downloadable PDF version for your records.</p>
               </div>

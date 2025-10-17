@@ -862,8 +862,21 @@ const handleDownloadPDF = async () => {
           </div>
 
           <div ref={resultsRef} style={{ backgroundColor: 'white', borderRadius: '1rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: isMobile ? '1.5rem' : '2rem', marginBottom: '1.5rem', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif' }}>
-            <h1 style={{ 
-              fontSize: isMobile ? '1.75rem' : '2.25rem', 
+  {/* Logo at the top of PDF - left aligned */}
+  <div style={{ marginBottom: '2rem' }}>
+    <img 
+      src="/legacy-dna-logo.png" 
+      alt="Legacy DNA" 
+      style={{ 
+        height: '60px',
+        width: 'auto',
+        objectFit: 'contain'
+      }} 
+    />
+  </div>
+
+  <h1 style={{ 
+    fontSize: isMobile ? '1.75rem' : '2.25rem', 
               fontWeight: 'bold', 
               color: '#111827', 
               marginBottom: '0.5rem',
@@ -993,7 +1006,11 @@ const handleDownloadPDF = async () => {
               const domainColor = '#009DB9';
               
               return (
-                <div key={idx} style={{ marginBottom: '2rem', paddingBottom: '2rem', borderBottom: idx < analysis.domainData.length - 1 ? '1px solid #e5e7eb' : 'none' }}>
+                <div 
+      key={idx} 
+      className={idx === 0 ? 'pdf-page-break-before' : ''}
+      style={{ marginBottom: '2rem', paddingBottom: '2rem', borderBottom: idx < analysis.domainData.length - 1 ? '1px solid #e5e7eb' : 'none' }}
+    >
                   <h3 style={{ 
                     fontSize: '1.75rem', 
                     fontWeight: 'bold', 

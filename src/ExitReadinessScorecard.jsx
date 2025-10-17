@@ -24,84 +24,58 @@ const ExitReadinessScorecard = () => {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Consolidated function: Generate full comprehensive PDF
-  const generateComprehensivePDF = async () => {
-    try {
-      // Get the results content
-      const element = resultsRef.current;
-      
-      // Clone the element to modify it without affecting the display
-      const clone = element.cloneNode(true);
-      
-      // Remove the download button banner from the PDF
-      const downloadBanner = clone.querySelector('[data-pdf-exclude]');
-      if (downloadBanner) {
-        downloadBanner.remove();
+const handleDownloadPDF = async () => {
+  setIsGeneratingPDF(true);
+  try {
+    // Get the results content
+    const element = resultsRef.current;
+    
+    // Clone the element to modify it without affecting the display
+    const clone = element.cloneNode(true);
+    
+    // Remove the download button banner from the PDF
+    const downloadBanner = clone.querySelector('[data-pdf-exclude]');
+    if (downloadBanner) {
+      downloadBanner.remove();
+    }
+    
+    // Configure html2pdf options
+    const opt = {
+      margin: [0.5, 0.5, 0.5, 0.5],
+      filename: `Exit-Readiness-Report-${Date.now()}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        letterRendering: true,
+        backgroundColor: '#ffffff'
+      },
+      jsPDF: { 
+        unit: 'in', 
+        format: 'letter', 
+        orientation: 'portrait'
+      },
+      pagebreak: { 
+        mode: ['avoid-all', 'css', 'legacy'],
+        before: '.pdf-page-break-before',
+        after: '.pdf-page-break-after',
+        avoid: '.pdf-avoid-break'
       }
-      
-      // Configure html2pdf options
-      const opt = {
-        margin: [0.5, 0.5, 0.5, 0.5],
-        filename: `Exit-Readiness-Report-${Date.now()}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          letterRendering: true,
-          backgroundColor: '#ffffff'
-        },
-        jsPDF: { 
-          unit: 'in', 
-          format: 'letter', 
-          orientation: 'portrait'
-        },
-        pagebreak: { 
-          mode: ['avoid-all', 'css', 'legacy'],
-          before: '.pdf-page-break-before',
-          after: '.pdf-page-break-after',
-          avoid: '.pdf-avoid-break'
-        }
-      };
-      
-      // Generate PDF as blob
-      const pdfBlob = await html2pdf()
-        .set(opt)
-        .from(clone)
-        .outputPdf('blob');
-      
-      return pdfBlob;
-    } catch (error) {
-      console.error('Error generating comprehensive PDF:', error);
-      throw error;
-    }
-  };
+    };
+    
+    // Generate PDF
+    await html2pdf().set(opt).from(clone).save();
+    
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    alert('There was an error generating your PDF. Please try again.');
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
 
-  // Function: Download PDF locally
-  const handleDownloadPDF = async () => {
-    setIsGeneratingPDF(true);
-    try {
-      console.log('📄 Generating comprehensive PDF for download...');
-      const pdfBlob = await generateComprehensivePDF();
-      
-      // Create download link
-      const url = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `Exit-Readiness-Report-${Date.now()}.pdf`;
-      link.click();
-      URL.revokeObjectURL(url);
-      
-      console.log('✅ PDF downloaded successfully');
-    } catch (error) {
-      console.error('Error downloading PDF:', error);
-      alert('There was an error generating your PDF. Please try again.');
-    } finally {
-      setIsGeneratingPDF(false);
-    }
-  };
-
-  // Function: Generate PDF, upload to R2, and submit to ActiveCampaign
+  // Updated function: Generate PDF, upload to R2, and submit to ActiveCampaign
   const handleSubmitToBackend = async () => {
     setIsSubmitting(true);
   
@@ -109,10 +83,71 @@ const ExitReadinessScorecard = () => {
       // Step 1: Generate the analysis data
       const analysis = getAnalysis();
       
-      console.log('📄 Generating comprehensive PDF for backend...');
+      console.log('📄 Generating PDF...');
       
-      // Step 2: Generate the SAME comprehensive PDF used for download
-      const pdfBlob = await generateComprehensivePDF();
+      // Step 2: Generate PDF as blob using html2pdf
+      const element = document.createElement('div');
+      element.style.width = '8.5in';
+      element.style.padding = '0.5in';
+      element.style.backgroundColor = 'white';
+      
+      // Create a simplified PDF-friendly version of the results
+      element.innerHTML = `
+        <div style="font-family: Georgia, serif;">
+          <h1 style="color: #34296A; margin-bottom: 20px;">Exit Readiness Report</h1>
+          <p style="color: #374151; font-size: 14px; margin-bottom: 30px;">Generated for: ${email}</p>
+          
+          <div style="background: linear-gradient(135deg, #34296A 0%, #4E72B8 100%); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px;">
+            <p style="font-size: 12px; text-transform: uppercase; color: #ddd6fe; margin-bottom: 10px;">Exit Readiness Score</p>
+            <p style="font-size: 48px; font-weight: bold; margin: 10px 0;">${analysis.overallScore}</p>
+            <p style="font-size: 14px; color: #ddd6fe;">out of 100</p>
+            <p style="font-size: 18px; font-weight: bold; margin-top: 15px;">${getScoreCategory(analysis.overallScore)}</p>
+          </div>
+          
+          <h2 style="color: #34296A; font-size: 24px; margin-bottom: 20px;">Domain Scores</h2>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            <thead>
+              <tr style="border-bottom: 2px solid #e5e7eb;">
+                <th style="text-align: left; padding: 10px; font-weight: 600; color: #374151;">Domain</th>
+                <th style="text-align: center; padding: 10px; font-weight: 600; color: #374151;">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${analysis.domainData.map(domain => `
+                <tr style="border-bottom: 1px solid #f3f4f6;">
+                  <td style="padding: 12px; color: #111827;">${domain.domain}</td>
+                  <td style="padding: 12px; text-align: center; font-weight: bold; color: #34296A;">${domain.displayScore}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 40px; padding: 20px; background: #f9fafb; border-radius: 10px;">
+            <h3 style="color: #34296A; font-size: 18px; margin-bottom: 10px;">About Legacy DNA</h3>
+            <p style="color: #374151; font-size: 12px; line-height: 1.6;">
+              Legacy DNA specializes in helping PE-backed healthtech CEOs maximize exit value through strategic positioning, 
+              messaging clarity, and market presence optimization.
+            </p>
+          </div>
+          
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center; color: #6B7280; font-size: 10px;">
+            <p>© 2025 Legacy DNA | Growth for Health Innovators | www.legacy-dna.com</p>
+            <p style="margin-top: 5px; font-style: italic;">Report generated for: ${email}</p>
+          </div>
+        </div>
+      `;
+      
+      // Generate PDF using html2pdf
+      const pdfBlob = await html2pdf()
+        .set({
+          margin: 0,
+          filename: `Exit-Readiness-Report-${Date.now()}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        })
+        .from(element)
+        .outputPdf('blob');
       
       console.log('✅ PDF generated');
       console.log('📦 Converting PDF to base64...');

@@ -966,6 +966,82 @@ const handleDownloadPDF = async () => {
                 </div>
               </div>
             </div>
+
+            {/* PDF Footer - Last Page */}
+            <div className="pdf-page-break-before" style={{ 
+              marginTop: '4rem', 
+              paddingTop: '3rem', 
+              borderTop: '2px solid #e5e7eb' 
+            }}>
+              {/* Large Logo */}
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                marginBottom: '2rem' 
+              }}>
+                <img 
+                  src="/legacy-dna-logo.png" 
+                  alt="Legacy DNA" 
+                  style={{ 
+                    height: '80px',
+                    width: 'auto',
+                    objectFit: 'contain'
+                  }} 
+                />
+              </div>
+
+              {/* About Section */}
+              <div style={{ 
+                backgroundColor: '#f9fafb', 
+                borderRadius: '0.75rem', 
+                padding: '2rem',
+                marginBottom: '2rem' 
+              }}>
+                <h3 style={{ 
+                  fontSize: '1.5rem', 
+                  fontWeight: 'bold', 
+                  color: '#34296A',
+                  marginBottom: '1rem',
+                  fontFamily: 'Georgia, "Times New Roman", serif',
+                  borderBottom: '2px solid #009DB9',
+                  paddingBottom: '0.5rem'
+                }}>
+                  About Legacy DNA
+                </h3>
+                <p style={{ 
+                  fontSize: '1rem',
+                  color: '#374151',
+                  lineHeight: '1.7',
+                  fontFamily: 'Georgia, "Times New Roman", serif',
+                  marginBottom: '0'
+                }}>
+                  Legacy DNA specializes in helping PE-backed healthtech CEOs maximize exit value. We've helped pharmacy, specialty care, and health tech companies increase valuations by 20-60% through strategic positioning, messaging clarity, and market presence optimization. Our clients have achieved multiple premium exits, including BioPlus Specialty Pharmacy's successful sale to both Nautic Partners and Elevance Health.
+                </p>
+              </div>
+
+              {/* Footer Information */}
+              <div style={{ 
+                textAlign: 'center',
+                color: '#6B7280',
+                fontSize: '0.875rem',
+                paddingTop: '1.5rem',
+                borderTop: '1px solid #e5e7eb'
+              }}>
+                <p style={{ 
+                  marginBottom: '0.5rem',
+                  fontFamily: 'Georgia, "Times New Roman", serif'
+                }}>
+                  \u00A9 2025 Legacy DNA | Growth for Health Innovators | <a href="https://www.legacy-dna.com" style={{ color: '#009DB9', textDecoration: 'none' }}>www.legacy-dna.com</a>
+                </p>
+                <p style={{ 
+                  marginBottom: '0',
+                  fontFamily: 'Georgia, "Times New Roman", serif',
+                  fontStyle: 'italic'
+                }}>
+                  Report generated for: {email}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

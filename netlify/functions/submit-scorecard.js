@@ -62,10 +62,9 @@ exports.handler = async (event) => {
           },
         });
 
-        // Create a unique filename
-        const timestamp = Date.now();
-        const sanitizedEmail = email.replace(/[@.]/g, '_');
-        const fileName = `${sanitizedEmail}_${timestamp}.pdf`;
+        // Create a unique filename - SHORT VERSION
+        const shortId = Math.random().toString(36).substring(2, 8);
+        const fileName = `LegacyDNA-${shortId}.pdf`;
         const key = `exit-readiness-reports/${fileName}`;
 
         // Convert base64 to Buffer
@@ -81,7 +80,7 @@ exports.handler = async (event) => {
 
         await r2Client.send(uploadCommand);
 
-        // ✅ FIX: Properly construct the public URL without double slashes
+        // Properly construct the public URL without double slashes
         const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
         // Remove trailing slash from public URL if it exists
         const baseUrl = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;

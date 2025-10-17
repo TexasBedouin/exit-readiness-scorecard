@@ -503,8 +503,8 @@ const handleDownloadPDF = async () => {
                 <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2', flexShrink: 0 }}>
                   <Clock style={{ width: '1.5rem', height: '1.5rem', color: '#009DB9' }} />
                 </div>
-                <div style={{ paddingTop: '0.125rem' }}>
-                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5' }}>Takes 5-7 minutes</h3>
+                <div>
+                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5', marginTop: '0' }}>Takes 5-7 minutes</h3>
                   <p style={{ 
                     color: '#6B7280', 
                     fontSize: '0.875rem',
@@ -520,8 +520,8 @@ const handleDownloadPDF = async () => {
                 <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2', flexShrink: 0 }}>
                   <BarChart3 style={{ width: '1.5rem', height: '1.5rem', color: '#009DB9' }} />
                 </div>
-                <div style={{ paddingTop: '0.125rem' }}>
-                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5' }}>Instant score with detailed breakdown</h3>
+                <div>
+                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5', marginTop: '0' }}>Instant score with detailed breakdown</h3>
                   <p style={{ color: '#6B7280', fontSize: '0.875rem', lineHeight: '1.5', marginBottom: '0' }}>See your results immediately with clear visuals</p>
                 </div>
               </div>
@@ -530,8 +530,8 @@ const handleDownloadPDF = async () => {
                 <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2', flexShrink: 0 }}>
                   <Target style={{ width: '1.5rem', height: '1.5rem', color: '#009DB9' }} />
                 </div>
-                <div style={{ paddingTop: '0.125rem' }}>
-                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5' }}>Benchmarked against buyer expectations</h3>
+                <div>
+                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5', marginTop: '0' }}>Benchmarked against buyer expectations</h3>
                   <p style={{ color: '#6B7280', fontSize: '0.875rem', lineHeight: '1.5', marginBottom: '0' }}>Compare your readiness to real exits and acquisition standards</p>
                 </div>
               </div>
@@ -540,8 +540,8 @@ const handleDownloadPDF = async () => {
                 <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2', flexShrink: 0 }}>
                   <CheckCircle style={{ width: '1.5rem', height: '1.5rem', color: '#009DB9' }} />
                 </div>
-                <div style={{ paddingTop: '0.125rem' }}>
-                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5' }}>Built for healthtech and pharmacy leaders</h3>
+                <div>
+                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5', marginTop: '0' }}>Built for healthtech and pharmacy leaders</h3>
                   <p style={{ color: '#6B7280', fontSize: '0.875rem', lineHeight: '1.5', marginBottom: '0' }}>Based on real exits and proven market strategies</p>
                 </div>
               </div>

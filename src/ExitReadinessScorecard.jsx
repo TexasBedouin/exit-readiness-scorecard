@@ -526,7 +526,7 @@ const handleDownloadPDF = async () => {
           }
         `}</style>
         
-        <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: isMobile ? '1.5rem' : '3rem' }}>
+        <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: isMobile ? '1.5rem' : '3rem', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif' }}>
         <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
           
 
@@ -672,7 +672,7 @@ const handleDownloadPDF = async () => {
     };
 
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: '1rem' }}>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: '1rem', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif' }}>
         {/* CSS for spinner animation */}
         <style>{`
           @keyframes spin {
@@ -916,9 +916,10 @@ const handleDownloadPDF = async () => {
                 color: '#374151', 
                 marginBottom: '0.5rem',
                 fontSize: '1rem',
-                lineHeight: '1.6'
+                lineHeight: '1.6',
+                fontWeight: 'bold'
               }}>
-                <strong>Your strongest area is {analysis.strongest.domain} ({analysis.strongest.displayScore})</strong>, and your biggest opportunity is <strong>{analysis.weakest.domain} ({analysis.weakest.displayScore})</strong>.
+                Your strongest area is {analysis.strongest.domain} ({analysis.strongest.displayScore}), and your biggest opportunity is {analysis.weakest.domain} ({analysis.weakest.displayScore}).
               </p>
               <p style={{ 
                 color: '#374151',
@@ -1233,7 +1234,7 @@ const handleDownloadPDF = async () => {
     const analysis = getAnalysis();
 
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: '1rem' }}>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: '1rem', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif' }}>
         <div style={{ maxWidth: '48rem', margin: '0 auto' }}>
           <div style={{ backgroundColor: 'white', borderRadius: '1rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: '2rem', marginBottom: '1.5rem' }}>
             <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>Your Exit Readiness Score</h1>
@@ -1373,7 +1374,8 @@ const handleDownloadPDF = async () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center', 
-      padding: '1rem' 
+      padding: '1rem',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif'
     }}>
       <div style={{ 
         width: '100%', 

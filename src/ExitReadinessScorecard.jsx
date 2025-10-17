@@ -504,7 +504,29 @@ const handleDownloadPDF = async () => {
 
   if (screen === 'welcome') {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: isMobile ? '1.5rem' : '3rem' }}>
+      <>
+        <style>{`
+          body {
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+          
+          body::-webkit-scrollbar {
+            display: none;
+          }
+          
+          html {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+          
+          html::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
+        
+        <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: isMobile ? '1.5rem' : '3rem' }}>
         <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
           
 
@@ -636,6 +658,7 @@ const handleDownloadPDF = async () => {
           </div>
         </div>
       </div>
+      </>
     );
   }
 

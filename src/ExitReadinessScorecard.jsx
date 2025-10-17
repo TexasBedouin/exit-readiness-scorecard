@@ -722,7 +722,7 @@ const handleDownloadPDF = async () => {
               </p>
             </div>
 
-            <h2 style={{ 
+            <h2 className="pdf-page-break-before" style={{ 
               fontSize: '1.75rem', 
               fontWeight: 'bold', 
               color: '#111827', 

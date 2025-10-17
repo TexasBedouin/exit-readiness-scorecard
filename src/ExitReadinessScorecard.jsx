@@ -1127,7 +1127,7 @@ const handleDownloadPDF = async () => {
                     lineHeight: '1.5'
                   }}>Get 2 growth levers and 1 red flag personalized to your company - 30 minutes, zero obligation</p>
                   <a 
-                    href="https://calendly.com/drroxietime/exit-readiness-diagnostic"
+                    href="https://calendly.com/legacydna/exit-readiness-diagnostic"
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ 

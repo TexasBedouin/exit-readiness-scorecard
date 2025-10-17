@@ -501,7 +501,16 @@ const ExitReadinessScorecard = () => {
                 </div>
                 <div>
                   <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem' }}>Takes 5-7 minutes</h3>
-                  <p style={{ color: '#6B7280', fontSize: '0.875rem' }}>10 questions across 5 critical domains</p>
+                  <p style={{ 
+                    fontSize: isMobile ? '18px' : '20px',
+                    fontWeight: '500',
+                    lineHeight: '1.7',
+                    marginBottom: '0',
+                    opacity: 0.95,
+                    color: '#4a4a4a'
+                  }}>
+                    10 questions across 5 critical domains
+                  </p>
                 </div>
               </div>
 

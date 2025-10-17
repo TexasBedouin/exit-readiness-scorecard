@@ -65,7 +65,7 @@ exports.handler = async (event) => {
         // Create a unique filename - SHORT VERSION
         const shortId = Math.random().toString(36).substring(2, 8);
         const fileName = `LegacyDNA-${shortId}.pdf`;
-        const key = `exit-readiness-reports/${fileName}`;
+        const key = fileName; // Store at root for shorter URL
 
         // Convert base64 to Buffer
         const pdfBuffer = Buffer.from(pdfBase64, 'base64');

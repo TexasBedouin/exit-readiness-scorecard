@@ -500,18 +500,16 @@ const handleDownloadPDF = async () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2' }}>
+                <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2', flexShrink: 0 }}>
                   <Clock style={{ width: '1.5rem', height: '1.5rem', color: '#009DB9' }} />
                 </div>
-                <div>
-                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem' }}>Takes 5-7 minutes</h3>
+                <div style={{ paddingTop: '0.125rem' }}>
+                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5' }}>Takes 5-7 minutes</h3>
                   <p style={{ 
-                    fontSize: isMobile ? '18px' : '20px',
-                    fontWeight: '500',
-                    lineHeight: '1.7',
-                    marginBottom: '0',
-                    opacity: 0.95,
-                    color: '#4a4a4a'
+                    color: '#6B7280', 
+                    fontSize: '0.875rem',
+                    lineHeight: '1.5',
+                    marginBottom: '0'
                   }}>
                     10 questions across 5 critical domains
                   </p>
@@ -519,32 +517,32 @@ const handleDownloadPDF = async () => {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2' }}>
+                <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2', flexShrink: 0 }}>
                   <BarChart3 style={{ width: '1.5rem', height: '1.5rem', color: '#009DB9' }} />
                 </div>
-                <div>
-                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem' }}>Instant score with detailed breakdown</h3>
-                  <p style={{ color: '#6B7280', fontSize: '0.875rem' }}>See your results immediately with clear visuals</p>
+                <div style={{ paddingTop: '0.125rem' }}>
+                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5' }}>Instant score with detailed breakdown</h3>
+                  <p style={{ color: '#6B7280', fontSize: '0.875rem', lineHeight: '1.5', marginBottom: '0' }}>See your results immediately with clear visuals</p>
                 </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2' }}>
+                <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2', flexShrink: 0 }}>
                   <Target style={{ width: '1.5rem', height: '1.5rem', color: '#009DB9' }} />
                 </div>
-                <div>
-                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontFamily: 'Georgia, "Times New Roman", serif' }}>Benchmarked against buyer expectations</h3>
-                  <p style={{ color: '#6B7280', fontSize: '0.875rem', fontFamily: 'Georgia, "Times New Roman", serif' }}>Compare your readiness to real exits and acquisition standards</p>
+                <div style={{ paddingTop: '0.125rem' }}>
+                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5' }}>Benchmarked against buyer expectations</h3>
+                  <p style={{ color: '#6B7280', fontSize: '0.875rem', lineHeight: '1.5', marginBottom: '0' }}>Compare your readiness to real exits and acquisition standards</p>
                 </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2' }}>
+                <div style={{ borderRadius: '0.5rem', padding: '0.75rem', marginRight: '1rem', backgroundColor: '#E2EEF2', flexShrink: 0 }}>
                   <CheckCircle style={{ width: '1.5rem', height: '1.5rem', color: '#009DB9' }} />
                 </div>
-                <div>
-                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontFamily: 'Georgia, "Times New Roman", serif' }}>Built for healthtech and pharmacy leaders</h3>
-                  <p style={{ color: '#6B7280', fontSize: '0.875rem', fontFamily: 'Georgia, "Times New Roman", serif' }}>Based on real exits and proven market strategies</p>
+                <div style={{ paddingTop: '0.125rem' }}>
+                  <h3 style={{ fontWeight: '600', color: '#111827', marginBottom: '0.25rem', fontSize: '1rem', lineHeight: '1.5' }}>Built for healthtech and pharmacy leaders</h3>
+                  <p style={{ color: '#6B7280', fontSize: '0.875rem', lineHeight: '1.5', marginBottom: '0' }}>Based on real exits and proven market strategies</p>
                 </div>
               </div>
             </div>

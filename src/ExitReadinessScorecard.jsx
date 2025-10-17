@@ -75,7 +75,7 @@ const handleDownloadPDF = async () => {
   }
 };
 
-  // Updated function: Generate PDF, upload to R2, submit to ActiveCampaign
+  // Updated function: Submit scores to ActiveCampaign (PDF generated separately by user)
   const handleSubmitToBackend = async () => {
     setIsSubmitting(true);
   
@@ -83,31 +83,8 @@ const handleDownloadPDF = async () => {
       // Step 1: Generate the analysis data
       const analysis = getAnalysis();
       
-      // Step 2: Generate PDF
-      console.log('📄 Generating PDF...');
-      const pdfBlob = await pdf(
-        <ExitReadinessPDF 
-          domainData={analysis.domainData}
-          overallScore={analysis.overallScore}
-          userEmail={email}
-          userName=""
-        />
-      ).toBlob();
-
-      // Step 3: Convert PDF to base64
-      console.log('📄 Converting PDF to base64...');
-      const base64PDF = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64 = reader.result.split(',')[1]; // Remove data URL prefix
-          resolve(base64);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(pdfBlob);
-      });
-
-      // Step 4: Send to Netlify function WITH PDF
-      console.log('📤 Uploading PDF and submitting to ActiveCampaign...');
+      // Step 2: Send to Netlify function
+      console.log('📤 Submitting to ActiveCampaign...');
       
       const response = await fetch('/.netlify/functions/submit-scorecard', {
         method: 'POST',
@@ -117,7 +94,10 @@ const handleDownloadPDF = async () => {
         body: JSON.stringify({
           email: email,
           overallScore: analysis.overallScore,
-          pdfBase64: base64PDF  // ✅ Sending actual PDF!
+          domainScores: analysis.domainData.map(d => ({
+            domain: d.domain,
+            score: d.score
+          }))
         }),
       });
 
@@ -128,7 +108,6 @@ const handleDownloadPDF = async () => {
       }
 
       console.log('✅ Success!');
-      console.log('📄 PDF URL from R2:', result.pdfUrl);
       console.log('👤 ActiveCampaign Contact ID:', result.contactId);
 
     } catch (error) {
@@ -633,7 +612,7 @@ const handleDownloadPDF = async () => {
             />
           </div>
 
-          <div style={{ background: 'linear-gradient(to right, #14b8a6, #06b6d4)', color: 'white', borderRadius: '0.75rem', padding: '1rem', marginBottom: '1.5rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}>
+          <div data-pdf-exclude style={{ background: 'linear-gradient(to right, #14b8a6, #06b6d4)', color: 'white', borderRadius: '0.75rem', padding: '1rem', marginBottom: '1.5rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                 <Mail style={{ width: '1.5rem', height: '1.5rem', marginRight: '0.75rem', flexShrink: 0 }} />
@@ -1049,7 +1028,7 @@ const handleDownloadPDF = async () => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-start', color: '#374151' }}>
                   <CheckCircle style={{ width: '1.25rem', height: '1.25rem', marginRight: '0.75rem', marginTop: '0.125rem', flexShrink: 0, color: '#009DB9' }} />
-                  <span><strong>Downloadable PDF report</strong> emailed to you for sharing with your team</span>
+                  <span><strong>Downloadable PDF report</strong> you can save for your records</span>
                 </div>
               </div>
 
@@ -1086,7 +1065,7 @@ const handleDownloadPDF = async () => {
                 <Mail style={{ width: '1.5rem', height: '1.5rem', marginRight: '0.75rem', color: '#009DB9' }} />
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827' }}>Get Your Complete Exit Readiness Report</h3>
               </div>
-              <p style={{ color: '#374151', marginBottom: '1.5rem' }}>Enter your email and we'll send you the full scorecard, detailed gap analysis, and downloadable PDF report.</p>
+              <p style={{ color: '#374151', marginBottom: '1.5rem' }}>Enter your email to see your full scorecard with detailed gap analysis and downloadable PDF report.</p>
               
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Email Address</label>
@@ -1127,7 +1106,7 @@ const handleDownloadPDF = async () => {
                   {isSubmitting ? 'Processing...' : 'Show My Full Results'}
                   {!isSubmitting && <ArrowRight style={{ marginLeft: '0.5rem', width: '1.5rem', height: '1.5rem' }} />}
                 </button>
-                <p style={{ fontSize: '0.75rem', color: '#6B7280', textAlign: 'center', marginTop: '0.5rem' }}>We'll also send you a downloadable PDF version for your records.</p>
+                <p style={{ fontSize: '0.75rem', color: '#6B7280', textAlign: 'center', marginTop: '0.5rem' }}>Your information will be saved to your account</p>
               </div>
             </div>
           </div>

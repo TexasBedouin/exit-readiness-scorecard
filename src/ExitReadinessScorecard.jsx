@@ -22,7 +22,6 @@ const ExitReadinessScorecard = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState('');
 
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);
@@ -106,9 +105,6 @@ const ExitReadinessScorecard = () => {
       console.log('✅ Success!');
       console.log('📄 PDF URL from R2:', result.pdfUrl);
       console.log('👤 ActiveCampaign Contact ID:', result.contactId);
-      
-      // Store the PDF URL
-      setPdfUrl(result.pdfUrl);
 
     } catch (error) {
       console.error('❌ Error submitting to backend:', error);

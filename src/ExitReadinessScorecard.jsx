@@ -49,7 +49,7 @@ const generatePDFBlob = async () => {
     filename: `Exit-Readiness-Report-${Date.now()}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { 
-      scale: 1.7,
+      scale: 1.5,
       useCORS: true,
       logging: false,
       letterRendering: true,

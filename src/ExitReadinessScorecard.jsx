@@ -1009,7 +1009,7 @@ const handleDownloadPDF = async () => {
                 <div 
       key={idx} 
       className={idx === 0 ? 'pdf-page-break-before' : ''}
-      style={{ marginBottom: '2rem', paddingBottom: '2rem', borderBottom: idx < analysis.domainData.length - 1 ? '1px solid #e5e7eb' : 'none' }}
+      style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: idx < analysis.domainData.length - 1 ? '1px solid #e5e7eb' : 'none' }}
     >
                   <h3 style={{ 
                     fontSize: '1.75rem', 

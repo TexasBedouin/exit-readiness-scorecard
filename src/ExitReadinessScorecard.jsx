@@ -197,6 +197,26 @@ const handleDownloadPDF = async () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen, email]);
 
+  // Iframe height communication - tells parent window how tall the content is
+  useEffect(() => {
+    const sendHeight = () => {
+      const height = document.documentElement.scrollHeight;
+      window.parent.postMessage({ type: 'scorecard-resize', height }, '*');
+    };
+
+    // Send height on mount and after a short delay (for content to render)
+    sendHeight();
+    const timeoutId = setTimeout(sendHeight, 100);
+
+    // Send height on window resize
+    window.addEventListener('resize', sendHeight);
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', sendHeight);
+    };
+  }, [screen, currentStep]); // Re-run when screen or question changes
+
   const questions = [
     // Domain 1: Customer clarity
     {

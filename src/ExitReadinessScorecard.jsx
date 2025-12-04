@@ -526,7 +526,7 @@ const handleDownloadPDF = async () => {
           }
         `}</style>
         
-        <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: isMobile ? '1.5rem' : '3rem', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif' }}>
+        <div style={{ background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: isMobile ? '1.5rem' : '3rem', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif' }}>
         <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
           
 
@@ -672,7 +672,7 @@ const handleDownloadPDF = async () => {
     };
 
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: '1rem', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif' }}>
+      <div style={{ background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: '1rem', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif' }}>
         {/* CSS for spinner animation */}
         <style>{`
           @keyframes spin {
@@ -1251,7 +1251,7 @@ const handleDownloadPDF = async () => {
     const analysis = getAnalysis();
 
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: '1rem', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif' }}>
+      <div style={{ background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', padding: '1rem', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif' }}>
         <div style={{ maxWidth: '48rem', margin: '0 auto' }}>
           <div style={{ backgroundColor: 'white', borderRadius: '1rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', padding: '2rem', marginBottom: '1.5rem' }}>
             <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>Your Exit Readiness Score</h1>
@@ -1385,18 +1385,15 @@ const handleDownloadPDF = async () => {
   const progress = ((currentStep + 1) / questions.length) * 100;
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
+    <div style={{
+      background: 'linear-gradient(to bottom right, #eff6ff, #f5f3ff, #ecfeff)',
       padding: '1rem',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif'
     }}>
-      <div style={{ 
-        width: '100%', 
-        maxWidth: isMobile ? '100%' : '48rem', 
+      <div style={{
+        width: '100%',
+        maxWidth: isMobile ? '100%' : '48rem',
+        margin: '0 auto',
         backgroundColor: 'white', 
         borderRadius: '1rem', 
         boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', 

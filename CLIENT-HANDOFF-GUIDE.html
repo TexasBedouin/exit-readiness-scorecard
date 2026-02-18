@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exit Readiness Scorecard - Handoff Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #fff;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #34296A;
+        }
+
+        .header h1 {
+            color: #34296A;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        h2 {
+            color: #34296A;
+            font-size: 20px;
+            margin: 30px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #E2EEF2;
+        }
+
+        h3 {
+            color: #009DB9;
+            font-size: 16px;
+            margin: 20px 0 10px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        .highlight-box {
+            background: #E2EEF2;
+            border-left: 4px solid #009DB9;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .highlight-box.purple {
+            background: #f5f3fa;
+            border-left-color: #34296A;
+        }
+
+        .highlight-box.orange {
+            background: #fff8f0;
+            border-left-color: #F58220;
+        }
+
+        .highlight-box h3 {
+            margin-top: 0;
+            color: inherit;
+        }
+
+        ul {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .timeline {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+
+        .timeline-number {
+            background: #34296A;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-content strong {
+            color: #34296A;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #34296A;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .cost-free {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .section-divider {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, #34296A, #009DB9);
+            margin: 40px 0;
+        }
+
+        .analogy {
+            font-style: italic;
+            color: #666;
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding: 10px 0 10px 35px;
+            position: relative;
+            border-bottom: 1px solid #eee;
+        }
+
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 5px;
+            font-size: 18px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #E2EEF2;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+            }
+            .highlight-box {
+                break-inside: avoid;
+            }
+            h2 {
+                break-after: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Exit Readiness Scorecard</h1>
+        <div class="subtitle">Ownership Transfer Guide</div>
+    </div>
+
+    <h2>What Is This About?</h2>
+
+    <p>Your Exit Readiness Scorecard tool is currently running on accounts that belong to your developer. We're going to move everything to accounts that <strong>you own and control</strong>.</p>
+
+    <div class="analogy">
+        <strong>Think of it like this:</strong> Right now, your scorecard is like a store operating in a building someone else owns. We're moving it to a building you own, so you have full control and aren't dependent on anyone else.
+    </div>
+
+    <h2>What Needs to Move?</h2>
+
+    <p>There are three things that need to be transferred to your ownership:</p>
+
+    <table>
+        <tr>
+            <th>What It Is</th>
+            <th>What It Does</th>
+            <th>Plain English</th>
+        </tr>
+        <tr>
+            <td><strong>The Website Files</strong></td>
+            <td>The actual scorecard application</td>
+            <td>Like the blueprints and materials for a building</td>
+        </tr>
+        <tr>
+            <td><strong>Website Hosting</strong></td>
+            <td>Where the scorecard lives online</td>
+            <td>Like the land where your building sits</td>
+        </tr>
+        <tr>
+            <td><strong>PDF Storage</strong></td>
+            <td>Where report PDFs are saved</td>
+            <td>Like a filing cabinet for all the reports</td>
+        </tr>
+    </table>
+
+    <div class="highlight-box purple">
+        <h3>Good News: These Are Already Yours</h3>
+        <ul>
+            <li><strong>ActiveCampaign</strong> - Your contact/email system (no changes needed)</li>
+            <li><strong>Google Analytics</strong> - Your website tracking (no changes needed)</li>
+            <li><strong>Your Website</strong> - Just needs a small update to point to the new location</li>
+        </ul>
+    </div>
+
+    <hr class="section-divider">
+
+    <h2>What You Need to Do</h2>
+
+    <div class="highlight-box orange">
+        <h3>Important: You'll Need Some Help</h3>
+        <p>This transfer involves creating accounts on technical platforms. While we've made it as simple as possible, you'll likely want to have someone with basic computer skills help you, such as:</p>
+        <ul>
+            <li>A tech-savvy employee or assistant</li>
+            <li>Your IT person (if you have one)</li>
+            <li>A freelancer from Upwork or Fiverr (search for "Netlify deployment")</li>
+            <li>Any web developer</li>
+        </ul>
+        <p><strong>Estimated cost if hiring help:</strong> $50-150 for 1-2 hours of work</p>
+    </div>
+
+    <h3>Accounts You'll Need to Create</h3>
+
+    <p>All of these are <strong>free</strong> and only require an email address to sign up:</p>
+
+    <table>
+        <tr>
+            <th>Account</th>
+            <th>What It's For</th>
+            <th>Cost</th>
+        </tr>
+        <tr>
+            <td><strong>GitHub</strong><br><small>github.com</small></td>
+            <td>Stores your website files (like a secure digital folder)</td>
+            <td class="cost-free">Free</td>
+        </tr>
+        <tr>
+            <td><strong>Netlify</strong><br><small>netlify.com</small></td>
+            <td>Hosts your website (makes it visible on the internet)</td>
+            <td class="cost-free">Free</td>
+        </tr>
+        <tr>
+            <td><strong>Cloudflare</strong><br><small>cloudflare.com</small></td>
+            <td>Stores the PDF reports that get created</td>
+            <td class="cost-free">Free</td>
+        </tr>
+    </table>
+
+    <hr class="section-divider">
+
+    <h2>The Transfer Process</h2>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-number">1</div>
+            <div class="timeline-content">
+                <strong>Create Your Accounts</strong><br>
+                Sign up for GitHub, Netlify, and Cloudflare using your company email. This takes about 15 minutes.
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-number">2</div>
+            <div class="timeline-content">
+                <strong>Copy the Website Files</strong><br>
+                Download the files from the current location and upload them to your new GitHub account.
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-number">3</div>
+            <div class="timeline-content">
+                <strong>Set Up PDF Storage</strong><br>
+                Create a storage space in Cloudflare for the PDF reports.
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-number">4</div>
+            <div class="timeline-content">
+                <strong>Connect Everything</strong><br>
+                Link your GitHub to Netlify so your website goes live. Add your ActiveCampaign and Cloudflare details.
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-number">5</div>
+            <div class="timeline-content">
+                <strong>Update Your Website</strong><br>
+                Change one line on your main website to point to your new scorecard location.
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-number">6</div>
+            <div class="timeline-content">
+                <strong>Test Everything</strong><br>
+                Complete a test assessment to make sure it all works.
+            </div>
+        </div>
+    </div>
+
+    <h2>Time Estimate</h2>
+
+    <table>
+        <tr>
+            <th>If Done By...</th>
+            <th>Estimated Time</th>
+        </tr>
+        <tr>
+            <td>Someone technical (developer, IT person)</td>
+            <td>1-2 hours</td>
+        </tr>
+        <tr>
+            <td>Someone computer-savvy (following our guide)</td>
+            <td>2-3 hours</td>
+        </tr>
+        <tr>
+            <td>Hiring a freelancer</td>
+            <td>Same day (they handle it)</td>
+        </tr>
+    </table>
+
+    <hr class="section-divider">
+
+    <h2>Information You'll Need to Provide</h2>
+
+    <p>Whoever helps you will need these details from you:</p>
+
+    <ul class="checklist">
+        <li><strong>Your ActiveCampaign API Key</strong><br>
+            <small>Found in: ActiveCampaign → Settings → Developer → API Access</small></li>
+        <li><strong>Your company email</strong><br>
+            <small>For creating the new accounts</small></li>
+        <li><strong>Access to your main website</strong><br>
+            <small>To update where the scorecard is embedded</small></li>
+    </ul>
+
+    <h2>What You'll Own After Transfer</h2>
+
+    <div class="highlight-box">
+        <p>Once complete, you will have <strong>100% ownership and control</strong> of:</p>
+        <ul>
+            <li>All the website code and files</li>
+            <li>The hosting (where it lives online)</li>
+            <li>The PDF storage</li>
+            <li>All lead data (already in your ActiveCampaign)</li>
+        </ul>
+        <p><strong>You will no longer depend on your developer's accounts for anything.</strong></p>
+    </div>
+
+    <h2>Ongoing Costs</h2>
+
+    <table>
+        <tr>
+            <th>Service</th>
+            <th>Monthly Cost</th>
+            <th>Notes</th>
+        </tr>
+        <tr>
+            <td>GitHub</td>
+            <td class="cost-free">$0</td>
+            <td>Free tier is plenty</td>
+        </tr>
+        <tr>
+            <td>Netlify</td>
+            <td class="cost-free">$0</td>
+            <td>Free tier allows 100GB bandwidth/month</td>
+        </tr>
+        <tr>
+            <td>Cloudflare R2</td>
+            <td class="cost-free">$0</td>
+            <td>Free tier allows 10GB storage + 10 million reads/month</td>
+        </tr>
+        <tr>
+            <td><strong>Total</strong></td>
+            <td class="cost-free"><strong>$0/month</strong></td>
+            <td>Unless you exceed free tier limits (unlikely)</td>
+        </tr>
+    </table>
+
+    <p><small>*Your scorecard would need thousands of users per day to exceed these free limits. For normal business use, you'll never pay anything.</small></p>
+
+    <hr class="section-divider">
+
+    <h2>Next Steps</h2>
+
+    <div class="highlight-box purple">
+        <h3>Option A: Have Someone Do It For You</h3>
+        <ol>
+            <li>Find a freelancer or ask your IT contact</li>
+            <li>Share the detailed technical guide (included with this document)</li>
+            <li>Provide them the information listed above</li>
+            <li>They complete the transfer in 1-2 hours</li>
+        </ol>
+        <p><strong>Cost:</strong> $50-150 typically</p>
+    </div>
+
+    <div class="highlight-box">
+        <h3>Option B: Do It Yourself (With Help)</h3>
+        <ol>
+            <li>Set aside 2-3 hours</li>
+            <li>Have someone computer-savvy sit with you</li>
+            <li>Follow the step-by-step technical guide together</li>
+            <li>Each step has detailed instructions</li>
+        </ol>
+        <p><strong>Cost:</strong> Free (just your time)</p>
+    </div>
+
+    <h2>Questions?</h2>
+
+    <p>The detailed technical guide (<code>MIGRATION-GUIDE.md</code>) contains:</p>
+    <ul>
+        <li>Step-by-step instructions with every click explained</li>
+        <li>Troubleshooting for common issues</li>
+        <li>A verification checklist to confirm everything works</li>
+    </ul>
+
+    <p>This guide is written for someone with basic technical knowledge and should answer most questions that come up during the transfer.</p>
+
+    <div class="footer">
+        <p>Exit Readiness Scorecard - Ownership Transfer Guide</p>
+        <p>Prepared for Legacy DNA</p>
+    </div>
+
+</body>
+</html>

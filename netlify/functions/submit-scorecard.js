@@ -1,7 +1,40 @@
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { getStore } = require('@netlify/blobs');
+
+// Fetch with timeout and retry
+async function fetchWithRetry(url, options = {}, { timeoutMs = 8000, retries = 2, backoffMs = 1000 } = {}) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timeout);
+      return response;
+    } catch (err) {
+      clearTimeout(timeout);
+      if (attempt === retries) throw err;
+      await new Promise((r) => setTimeout(r, backoffMs * attempt));
+    }
+  }
+}
+
+// ActiveCampaign fetch helper — adds auth header and timeout/retry
+async function acFetch(path, options = {}) {
+  const url = `${process.env.AC_API_URL}${path}`;
+  const response = await fetchWithRetry(url, {
+    ...options,
+    headers: {
+      'Api-Token': process.env.AC_API_TOKEN,
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
+  });
+  return response;
+}
 
 exports.handler = async (event) => {
-  // CORS headers
+  const submissionId = Math.random().toString(36).substring(2, 8);
+
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -9,12 +42,10 @@ exports.handler = async (event) => {
     'Content-Type': 'application/json',
   };
 
-  // Handle preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
 
-  // Only allow POST
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -23,222 +54,175 @@ exports.handler = async (event) => {
     };
   }
 
+  const warnings = [];
+  const log = (step, status, detail) =>
+    console.log(JSON.stringify({ submissionId, step, status, detail }));
+
   try {
-    // Parse the request body
     const { email, overallScore, pdfBase64 } = JSON.parse(event.body);
 
-    console.log('📨 Received submission:', {
-      email,
-      overallScore,
-      hasPDF: !!pdfBase64,
-    });
+    log('parse', 'ok', { email, overallScore, hasPDF: !!pdfBase64 });
 
-    // Validate required fields
-    if (!email || !overallScore) {
+    if (!email || overallScore === undefined || overallScore === null) {
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({
           success: false,
           error: 'Missing required fields: email, overallScore',
+          submissionId,
         }),
       };
     }
 
+    // --- Upload PDF to Netlify Blobs ---
     let pdfUrl = null;
 
-    // Upload PDF to R2 if provided
     if (pdfBase64) {
       try {
-        console.log('📄 Uploading PDF to R2...');
+        log('pdf-upload', 'start', null);
 
-        // Configure R2 client (R2 is S3-compatible)
-        const r2Client = new S3Client({
-          region: 'auto',
-          endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-          credentials: {
-            accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID,
-            secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY,
-          },
-        });
-
-        // Create a unique filename - SHORT VERSION
+        const store = getStore('scorecard-pdfs');
         const shortId = Math.random().toString(36).substring(2, 8);
-        const fileName = `LegacyDNA-${shortId}.pdf`;
-        const key = fileName; // Store at root for shorter URL
-
-        // Convert base64 to Buffer
+        const key = `LegacyDNA-${shortId}.pdf`;
         const pdfBuffer = Buffer.from(pdfBase64, 'base64');
 
-        // Upload to R2
-        const uploadCommand = new PutObjectCommand({
-          Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
-          Key: key,
-          Body: pdfBuffer,
-          ContentType: 'application/pdf',
-        });
+        await store.set(key, pdfBuffer, { metadata: { contentType: 'application/pdf', email } });
 
-        await r2Client.send(uploadCommand);
+        // The serve-pdf function will serve this file
+        pdfUrl = `/.netlify/functions/serve-pdf?id=${encodeURIComponent(key)}`;
 
-        // Properly construct the public URL without double slashes
-        const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
-        // Remove trailing slash from public URL if it exists
-        const baseUrl = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;
-        // Ensure key starts with a slash
-        const normalizedKey = key.startsWith('/') ? key : `/${key}`;
-        // Construct the final URL
-        pdfUrl = `${baseUrl}${normalizedKey}`;
-
-        console.log('✅ PDF uploaded to R2:', pdfUrl);
+        log('pdf-upload', 'ok', { key, pdfUrl });
       } catch (uploadError) {
-        console.error('❌ R2 upload failed:', uploadError);
-        // Continue anyway - don't fail the whole request
-        pdfUrl = null;
+        log('pdf-upload', 'error', uploadError.message);
+        warnings.push('PDF upload failed — report may not be available via link');
       }
     }
 
-    // Prepare ActiveCampaign data
+    // --- Create/update contact in ActiveCampaign ---
+    log('ac-contact', 'start', null);
+
     const acData = {
       contact: {
-        email: email,
+        email,
         fieldValues: [
-          {
-            field: '20', // Overall Score field
-            value: overallScore.toString(),
-          },
+          { field: '20', value: overallScore.toString() },
         ],
       },
     };
 
-    // Add PDF URL to field 21 if we have it
     if (pdfUrl) {
-      console.log('✅ Field 21 will be set to R2 PDF URL:', pdfUrl);
-      acData.contact.fieldValues.push({
-        field: '21', // PDF Report URL field
-        value: pdfUrl,
-      });
-    } else {
-      console.log('⚠️ No PDF URL to set in field 21');
+      acData.contact.fieldValues.push({ field: '21', value: pdfUrl });
     }
 
-    // Send to ActiveCampaign
-    console.log('📬 Sending contact to ActiveCampaign...');
-    const acResponse = await fetch(
-      `${process.env.AC_API_URL}/api/3/contact/sync`,
-      {
-        method: 'POST',
-        headers: {
-          'Api-Token': process.env.AC_API_TOKEN,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(acData),
-      }
-    );
-
-    console.log('ActiveCampaign response status:', acResponse.status);
+    const acResponse = await acFetch('/api/3/contact/sync', {
+      method: 'POST',
+      body: JSON.stringify(acData),
+    });
 
     if (!acResponse.ok) {
-      const errorText = await acResponse.text();
-      console.error('ActiveCampaign error:', errorText);
-      throw new Error(`ActiveCampaign API failed: ${acResponse.status}`);
+      const errorText = await acResponse.text().catch(() => 'unknown');
+      log('ac-contact', 'error', { status: acResponse.status, body: errorText });
+      throw new Error(`Failed to save contact to CRM (status ${acResponse.status})`);
     }
 
     const acResult = await acResponse.json();
-    const contactId = acResult.contact.id;
+    const contactId = acResult.contact && acResult.contact.id;
 
-    // Add contact to list
-    const listData = {
-      contactList: {
-        list: process.env.AC_LIST_ID,
-        contact: contactId,
-        status: 1,
-      },
-    };
-
-    const listResponse = await fetch(
-      `${process.env.AC_API_URL}/api/3/contactLists`,
-      {
-        method: 'POST',
-        headers: {
-          'Api-Token': process.env.AC_API_TOKEN,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(listData),
-      }
-    );
-
-    if (listResponse.ok) {
-      console.log('✅ Contact added to list');
-    } else {
-      console.error('⚠️ Failed to add contact to list');
+    if (!contactId) {
+      log('ac-contact', 'error', 'No contact ID in response');
+      throw new Error('CRM returned success but no contact ID');
     }
 
-    // Add tags
+    log('ac-contact', 'ok', { contactId });
+
+    // --- Add contact to list (CRITICAL for email automations) ---
+    log('ac-list', 'start', null);
+
+    const listResponse = await acFetch('/api/3/contactLists', {
+      method: 'POST',
+      body: JSON.stringify({
+        contactList: {
+          list: process.env.AC_LIST_ID,
+          contact: contactId,
+          status: 1,
+        },
+      }),
+    });
+
+    if (!listResponse.ok) {
+      const listError = await listResponse.text().catch(() => 'unknown');
+      log('ac-list', 'error', { status: listResponse.status, body: listError });
+      // This is a hard failure — without list membership, no follow-up emails trigger
+      throw new Error('Contact saved but could not be added to the email list. Follow-up emails will not be sent.');
+    }
+
+    log('ac-list', 'ok', null);
+
+    // --- Add tags ---
     const tags = ['exit-readiness-completed', `score-${overallScore}`];
 
     for (const tagName of tags) {
       try {
-        // First, get or create the tag
-        const tagSearchResponse = await fetch(
-          `${process.env.AC_API_URL}/api/3/tags?search=${encodeURIComponent(tagName)}`,
-          {
-            headers: {
-              'Api-Token': process.env.AC_API_TOKEN,
-            },
-          }
+        log('ac-tag', 'start', tagName);
+
+        // Search for existing tag
+        const tagSearchResponse = await acFetch(
+          `/api/3/tags?search=${encodeURIComponent(tagName)}`
         );
 
-        let tagId;
+        let tagId = null;
+
         if (tagSearchResponse.ok) {
           const tagSearchResult = await tagSearchResponse.json();
           if (tagSearchResult.tags && tagSearchResult.tags.length > 0) {
             tagId = tagSearchResult.tags[0].id;
           } else {
-            // Create tag if it doesn't exist
-            const createTagResponse = await fetch(
-              `${process.env.AC_API_URL}/api/3/tags`,
-              {
-                method: 'POST',
-                headers: {
-                  'Api-Token': process.env.AC_API_TOKEN,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  tag: {
-                    tag: tagName,
-                    tagType: 'contact',
-                  },
-                }),
-              }
-            );
+            // Create tag
+            const createTagResponse = await acFetch('/api/3/tags', {
+              method: 'POST',
+              body: JSON.stringify({ tag: { tag: tagName, tagType: 'contact' } }),
+            });
+
+            if (!createTagResponse.ok) {
+              log('ac-tag', 'warn', `Could not create tag "${tagName}"`);
+              warnings.push(`Could not create tag "${tagName}"`);
+              continue;
+            }
+
             const createTagResult = await createTagResponse.json();
-            tagId = createTagResult.tag.id;
+            tagId = createTagResult.tag && createTagResult.tag.id;
           }
+        } else {
+          log('ac-tag', 'warn', `Tag search failed for "${tagName}"`);
+          warnings.push(`Tag search failed for "${tagName}"`);
+          continue;
+        }
+
+        if (!tagId) {
+          warnings.push(`Could not resolve tag ID for "${tagName}"`);
+          continue;
         }
 
         // Apply tag to contact
-        if (tagId) {
-          await fetch(`${process.env.AC_API_URL}/api/3/contactTags`, {
-            method: 'POST',
-            headers: {
-              'Api-Token': process.env.AC_API_TOKEN,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              contactTag: {
-                contact: contactId,
-                tag: tagId,
-              },
-            }),
-          });
-          console.log(`✅ Tag '${tagName}' added to contact`);
+        const applyResponse = await acFetch('/api/3/contactTags', {
+          method: 'POST',
+          body: JSON.stringify({ contactTag: { contact: contactId, tag: tagId } }),
+        });
+
+        if (!applyResponse.ok) {
+          log('ac-tag', 'warn', `Could not apply tag "${tagName}" to contact`);
+          warnings.push(`Could not apply tag "${tagName}"`);
+        } else {
+          log('ac-tag', 'ok', tagName);
         }
       } catch (tagError) {
-        console.error(`⚠️ Failed to add tag '${tagName}':`, tagError);
+        log('ac-tag', 'warn', { tagName, error: tagError.message });
+        warnings.push(`Tag "${tagName}" failed: ${tagError.message}`);
       }
     }
 
-    console.log('🎉 SUCCESS! All steps completed.');
+    log('complete', 'ok', { warnings: warnings.length });
 
     return {
       statusCode: 200,
@@ -246,18 +230,23 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         success: true,
         message: 'Scorecard submitted successfully',
-        contactId: contactId,
-        pdfUrl: pdfUrl,
+        contactId,
+        pdfUrl,
+        warnings,
+        submissionId,
       }),
     };
   } catch (error) {
-    console.error('❌ Error:', error);
+    log('fatal', 'error', error.message);
+
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
         success: false,
         error: error.message || 'Internal server error',
+        warnings,
+        submissionId,
       }),
     };
   }

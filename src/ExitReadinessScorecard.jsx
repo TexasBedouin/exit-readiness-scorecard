@@ -3,6 +3,8 @@ import { ArrowRight, CheckCircle, TrendingUp, Lock, Mail, Download, Clock, BarCh
 import html2pdf from 'html2pdf.js';
 
 
+const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
 const ExitReadinessScorecard = () => {
   const [screen, setScreen] = useState('welcome');
   const [currentStep, setCurrentStep] = useState(0);
@@ -24,6 +26,8 @@ const ExitReadinessScorecard = () => {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isCapturingLead, setIsCapturingLead] = useState(false);
   const [leadCaptureError, setLeadCaptureError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
 
 // Shared function to generate PDF blob from the rendered results page
 const generatePDFBlob = async () => {
@@ -94,66 +98,66 @@ const handleDownloadPDF = async () => {
   }
 };
 
-  // Updated function: Generate PDF, upload to R2, and submit to ActiveCampaign
+  // Submit lead data to backend with timeout and safe error handling
   const handleSubmitToBackend = async () => {
-    console.log('🚀 Starting lead capture process...');
-  
+    const pdfBlob = await generatePDFBlob();
+
+    // Convert blob to base64
+    const reader = new FileReader();
+    const pdfBase64 = await new Promise((resolve, reject) => {
+      reader.onload = () => {
+        const result = reader.result;
+        const commaIndex = result.indexOf(',');
+        resolve(commaIndex >= 0 ? result.substring(commaIndex + 1) : result);
+      };
+      reader.onerror = () => reject(new Error('Failed to read PDF data'));
+      reader.readAsDataURL(pdfBlob);
+    });
+
+    const analysis = getAnalysis();
+
+    // Fetch with 30-second timeout
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+
+    let response;
     try {
-      console.log('📄 Generating PDF from rendered page...');
-      
-      // Use the SAME PDF generation function as the download button
-      // This ensures the PDF sent to ActiveCampaign is identical to what the user downloads
-      const pdfBlob = await generatePDFBlob();
-      
-      console.log('✅ PDF generated (identical to download version)');
-      console.log('📦 Converting PDF to base64...');
-      
-      // Convert blob to base64
-      const reader = new FileReader();
-      const pdfBase64 = await new Promise((resolve, reject) => {
-        reader.onload = () => {
-          const base64 = reader.result.split(',')[1]; // Remove data URL prefix
-          resolve(base64);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(pdfBlob);
-      });
-      
-      console.log('✅ PDF converted to base64');
-      console.log('📤 Uploading to R2 and submitting to ActiveCampaign...');
-      
-      // Get analysis for sending score data
-      const analysis = getAnalysis();
-      
-      // Send to Netlify function with PDF
-      const response = await fetch('/.netlify/functions/submit-scorecard', {
+      response = await fetch('/.netlify/functions/submit-scorecard', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
-          email: email,
+          email,
           overallScore: analysis.overallScore,
-          pdfBase64: pdfBase64
+          pdfBase64,
         }),
       });
-
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.error || 'Failed to submit to ActiveCampaign');
+    } catch (err) {
+      clearTimeout(timeout);
+      if (err.name === 'AbortError') {
+        throw new Error('The request timed out. Please check your internet connection and try again.');
       }
-
-      console.log('✅ Success! Lead captured in ActiveCampaign');
-      console.log('👤 Contact ID:', result.contactId);
-      if (result.pdfUrl) {
-        console.log('📄 PDF URL:', result.pdfUrl);
-      }
-
-    } catch (error) {
-      console.error('❌ Error submitting to backend:', error);
-      throw error; // Re-throw so the caller knows it failed
+      throw new Error('Could not connect to our server. Please check your internet connection and try again.');
     }
+    clearTimeout(timeout);
+
+    // Safely parse response
+    let result;
+    try {
+      result = await response.json();
+    } catch {
+      throw new Error('Our server returned an unexpected response. Please try again.');
+    }
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Something went wrong saving your results. Please try again.');
+    }
+
+    if (result.warnings && result.warnings.length > 0) {
+      console.warn('Submission warnings:', result.warnings);
+    }
+
+    return result;
   };
 
   useEffect(() => {
@@ -165,35 +169,39 @@ const handleDownloadPDF = async () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Lead capture effect - runs when we navigate to fullResults
+  // Lead capture effect - runs once when we navigate to fullResults
   useEffect(() => {
-    if (screen === 'fullResults' && email && !isCapturingLead) {
-      // Only run once per email submission
-      const captureKey = `captured_${email}`;
-      if (sessionStorage.getItem(captureKey)) {
-        console.log('ℹ️ Lead already captured this session');
-        return; // Already captured this session
-      }
-      
-      setIsCapturingLead(true);
-      setLeadCaptureError(null);
-      
-      console.log('🎯 Starting automatic lead capture...');
-      
-      // Wait a moment for DOM to render
-      setTimeout(async () => {
-        try {
-          await handleSubmitToBackend();
+    if (screen !== 'fullResults' || !email) return;
+
+    const captureKey = `captured_${email}`;
+    if (sessionStorage.getItem(captureKey)) return;
+
+    let isCancelled = false;
+
+    setIsCapturingLead(true);
+    setLeadCaptureError(null);
+
+    // Wait for DOM to render before generating PDF
+    const timerId = setTimeout(async () => {
+      if (isCancelled) return;
+      try {
+        await handleSubmitToBackend();
+        if (!isCancelled) {
           sessionStorage.setItem(captureKey, 'true');
           setIsCapturingLead(false);
-          console.log('✅ Lead capture complete!');
-        } catch (error) {
+        }
+      } catch (error) {
+        if (!isCancelled) {
           setIsCapturingLead(false);
           setLeadCaptureError(error.message);
-          console.error('❌ Lead capture failed:', error);
         }
-      }, 1000); // Give DOM 1 second to render
-    }
+      }
+    }, 1000);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timerId);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen, email]);
 
@@ -703,7 +711,7 @@ const handleDownloadPDF = async () => {
 
         {/* LOADING OVERLAY - Lead Capture in Progress */}
         {isCapturingLead && (
-          <div style={{
+          <div role="status" aria-live="polite" style={{
             position: 'fixed',
             top: 0,
             left: 0,
@@ -760,7 +768,7 @@ const handleDownloadPDF = async () => {
 
         {/* ERROR OVERLAY - Lead Capture Failed */}
         {leadCaptureError && (
-          <div style={{
+          <div role="alert" aria-live="assertive" style={{
             position: 'fixed',
             top: 0,
             left: 0,
@@ -790,7 +798,7 @@ const handleDownloadPDF = async () => {
                 justifyContent: 'center',
                 margin: '0 auto 1.5rem'
               }}>
-                <span style={{ fontSize: '2.5rem' }}>⚠️</span>
+                <span style={{ fontSize: '2.5rem' }}>&#9888;&#65039;</span>
               </div>
               <h3 style={{
                 fontSize: '1.5rem',
@@ -806,41 +814,72 @@ const handleDownloadPDF = async () => {
                 marginBottom: '1.5rem',
                 lineHeight: '1.6'
               }}>
-                We couldn't save your results to our system. Please click retry so we can capture your information and send you follow-up resources.
+                {leadCaptureError}
               </p>
-              <button
-                onClick={async () => {
-                  setLeadCaptureError(null);
-                  setIsCapturingLead(true);
-                  try {
-                    await handleSubmitToBackend();
-                    sessionStorage.setItem(`captured_${email}`, 'true');
-                    setIsCapturingLead(false);
-                  } catch (error) {
-                    setLeadCaptureError(error.message);
-                    setIsCapturingLead(false);
-                  }
-                }}
-                style={{
-                  backgroundColor: '#34296A',
-                  color: 'white',
-                  padding: '0.875rem 2rem',
-                  borderRadius: '0.5rem',
-                  fontWeight: '600',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '1.125rem'
-                }}
-              >
-                Retry Now
-              </button>
+              {retryCount < MAX_RETRIES ? (
+                <button
+                  onClick={async () => {
+                    setLeadCaptureError(null);
+                    setIsCapturingLead(true);
+                    setRetryCount((c) => c + 1);
+                    try {
+                      await handleSubmitToBackend();
+                      sessionStorage.setItem(`captured_${email}`, 'true');
+                      setIsCapturingLead(false);
+                      setRetryCount(0);
+                    } catch (error) {
+                      setLeadCaptureError(error.message);
+                      setIsCapturingLead(false);
+                    }
+                  }}
+                  style={{
+                    backgroundColor: '#34296A',
+                    color: 'white',
+                    padding: '0.875rem 2rem',
+                    borderRadius: '0.5rem',
+                    fontWeight: '600',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '1.125rem'
+                  }}
+                >
+                  Retry Now ({MAX_RETRIES - retryCount} {MAX_RETRIES - retryCount === 1 ? 'attempt' : 'attempts'} left)
+                </button>
+              ) : (
+                <p style={{
+                  color: '#DC2626',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem'
+                }}>
+                  We were unable to save your results after multiple attempts. Your scores are still visible below &mdash; please take a screenshot for your records.
+                </p>
+              )}
               <p style={{
                 color: '#9CA3AF',
                 fontSize: '0.75rem',
                 marginTop: '1rem'
               }}>
-                Your results are saved locally - we just need to sync them to our system
+                Your results are displayed below &mdash; you can still view and download your report
               </p>
+              {retryCount >= MAX_RETRIES && (
+                <button
+                  onClick={() => setLeadCaptureError(null)}
+                  style={{
+                    marginTop: '1rem',
+                    backgroundColor: 'transparent',
+                    color: '#6B7280',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '0.5rem',
+                    fontWeight: '500',
+                    border: '1px solid #d1d5db',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  Dismiss
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -1359,30 +1398,37 @@ const handleDownloadPDF = async () => {
               <p style={{ color: '#374151', marginBottom: '1.5rem' }}>Enter your email to see your full scorecard with detailed gap analysis and downloadable PDF report.</p>
               
               <div>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Email Address</label>
+                <label htmlFor="scorecard-email" style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>Email Address</label>
                 <input
+                  id="scorecard-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  style={{ width: '100%', padding: '0.75rem 1rem', border: '1px solid #d1d5db', borderRadius: '0.5rem', fontSize: '1rem', marginBottom: '1rem' }}
+                  style={{ width: '100%', padding: '0.75rem 1rem', border: `1px solid ${email && !isValidEmail(email) ? '#DC2626' : '#d1d5db'}`, borderRadius: '0.5rem', fontSize: '1rem', marginBottom: '1rem' }}
                   placeholder="your@email.com"
+                  aria-describedby={email && !isValidEmail(email) ? 'email-error' : undefined}
                 />
+                {email && !isValidEmail(email) && (
+                  <p id="email-error" style={{ color: '#DC2626', fontSize: '0.75rem', marginTop: '-0.75rem', marginBottom: '0.75rem' }}>
+                    Please enter a valid email address
+                  </p>
+                )}
                 <button
                   onClick={() => {
                     // Navigate to fullResults immediately - lead capture happens automatically via useEffect
                     setScreen('fullResults');
                   }}
-                  disabled={!email || !email.includes('@')}
+                  disabled={!isValidEmail(email)}
                   style={{ 
                     width: '100%',
-                    backgroundColor: (!email || !email.includes('@')) ? '#d1d5db' : '#34296A',
+                    backgroundColor: (!isValidEmail(email)) ? '#d1d5db' : '#34296A',
                     color: 'white',
                     padding: '1rem 2rem',
                     borderRadius: '0.5rem',
                     fontWeight: '600',
                     fontSize: '1.125rem',
                     border: 'none',
-                    cursor: (!email || !email.includes('@')) ? 'not-allowed' : 'pointer',
+                    cursor: (!isValidEmail(email)) ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
@@ -1470,6 +1516,8 @@ const handleDownloadPDF = async () => {
           {currentQuestion.options.map((option) => (
             <button
               key={option.value}
+              aria-label={`Score ${option.value} of 5: ${option.label}`}
+              aria-pressed={currentAnswer === option.value}
               onClick={() => setAnswers(prev => ({ ...prev, [currentQuestion.id]: option.value }))}
               style={{
                 width: '100%',

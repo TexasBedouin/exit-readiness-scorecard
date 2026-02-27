@@ -1,429 +1,159 @@
-# Exit Readiness Scorecard - Migration Guide
+# Exit Readiness Scorecard — Migration Guide
 
-This guide will help you take full ownership of the Exit Readiness Scorecard application. Follow each section in order.
-
----
-
-## Table of Contents
-
-1. [Overview - What You're Getting](#1-overview---what-youre-getting)
-2. [Prerequisites](#2-prerequisites)
-3. [Step 1: Get the Source Code](#step-1-get-the-source-code)
-4. [Step 2: Set Up Your GitHub Repository](#step-2-set-up-your-github-repository)
-5. [Step 3: Set Up Cloudflare R2 (PDF Storage)](#step-3-set-up-cloudflare-r2-pdf-storage)
-6. [Step 4: Deploy to Netlify](#step-4-deploy-to-netlify)
-7. [Step 5: Configure Environment Variables](#step-5-configure-environment-variables)
-8. [Step 6: Update Your Website Embed](#step-6-update-your-website-embed)
-9. [Step 7: Update Google Tag Manager (Optional)](#step-7-update-google-tag-manager-optional)
-10. [Verification Checklist](#verification-checklist)
-11. [Troubleshooting](#troubleshooting)
-12. [Technical Reference](#technical-reference)
+This guide walks you through setting up the Exit Readiness Scorecard on your own accounts. After completing these steps, you will fully own and control the application.
 
 ---
 
-## 1. Overview - What You're Getting
+## What You Need
 
-### The Application
-- **Exit Readiness Scorecard** - A 10-question assessment tool
-- Generates PDF reports for leads
-- Integrates with ActiveCampaign CRM
-- Stores PDFs in cloud storage
+| Component | What You Need | Cost |
+|---|---|---|
+| Source Code | GitHub account | Free |
+| Hosting + Backend + PDF Storage | Netlify account | Free tier works |
+| CRM | ActiveCampaign | Already yours — no change |
+| Analytics | Google Tag Manager | Already yours — no change |
 
-### Components to Migrate
-
-| Component | Current Location | What You Need |
-|-----------|-----------------|---------------|
-| Source Code | GitHub (developer's repo) | Your own GitHub account |
-| Website Hosting | Netlify | Your own Netlify account (free tier works) |
-| PDF Storage | Cloudflare R2 | Your own Cloudflare account |
-| CRM | ActiveCampaign | Already yours - no change needed |
-| Analytics | Google Tag Manager | Already yours - no change needed |
-
-### Estimated Time
-- **Total time**: 1-2 hours
-- **Technical skill required**: Basic (copy/paste, clicking buttons)
+**Estimated time: 30–60 minutes**
 
 ---
 
-## 2. Prerequisites
+## Step 1: Set Up Your GitHub Repository
 
-Before starting, make sure you have:
-
-- [ ] A GitHub account (free) - [Create one here](https://github.com/signup)
-- [ ] A Netlify account (free) - [Create one here](https://netlify.com)
-- [ ] A Cloudflare account (free) - [Create one here](https://cloudflare.com)
-- [ ] Access to your ActiveCampaign account
-- [ ] Access to your Google Tag Manager account (optional)
+1. Go to [github.com/signup](https://github.com/signup) and create an account (or sign in)
+2. Create a new **private** repository named `exit-readiness-scorecard`
+3. Upload all project files to the repository (or use `git push`)
 
 ---
 
-## Step 1: Get the Source Code
+## Step 2: Deploy to Netlify
 
-### Option A: Download as ZIP (Easiest)
-
-1. Go to the GitHub repository: `https://github.com/TexasBedouin/exit-readiness-scorecard`
-2. Click the green **"Code"** button
-3. Click **"Download ZIP"**
-4. Save and extract the ZIP file to your computer
-
-### Option B: Use Git (If you're comfortable with command line)
-
-```bash
-git clone https://github.com/TexasBedouin/exit-readiness-scorecard.git
-cd exit-readiness-scorecard
-```
-
----
-
-## Step 2: Set Up Your GitHub Repository
-
-### Create Your Repository
-
-1. Log in to [GitHub](https://github.com)
-2. Click the **"+"** icon in the top right → **"New repository"**
-3. Name it: `exit-readiness-scorecard` (or whatever you prefer)
-4. Set to **Private** (recommended)
-5. Click **"Create repository"**
-
-### Upload the Code
-
-**If you downloaded the ZIP:**
-
-1. On your new repository page, click **"uploading an existing file"**
-2. Drag and drop ALL files from the extracted folder
-3. Click **"Commit changes"**
-
-**If you used Git:**
-
-```bash
-# Remove the old remote
-git remote remove origin
-
-# Add your new repository as remote
-git remote add origin https://github.com/YOUR-USERNAME/exit-readiness-scorecard.git
-
-# Push the code
-git push -u origin main
-```
-
----
-
-## Step 3: Set Up Cloudflare R2 (PDF Storage)
-
-Cloudflare R2 stores the PDF reports. You need to create your own bucket.
-
-### 3.1 Create a Cloudflare Account
-
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com)
-2. Sign up or log in
-
-### 3.2 Create an R2 Bucket
-
-1. In the left sidebar, click **"R2 Object Storage"**
-2. Click **"Create bucket"**
-3. Name it: `legacy-dna-pdfs` (or any name you prefer)
-4. Click **"Create bucket"**
-
-### 3.3 Enable Public Access
-
-1. Click on your new bucket
-2. Go to **"Settings"** tab
-3. Under **"Public access"**, click **"Allow Access"**
-4. Choose **"Connect domain"** or use the R2.dev subdomain:
-   - Click **"Enable R2.dev subdomain"**
-   - Copy the URL (looks like: `https://pub-abc123.r2.dev`)
-
-### 3.4 Create API Credentials
-
-1. Go back to **R2 Object Storage** main page
-2. Click **"Manage R2 API Tokens"** (right side)
-3. Click **"Create API token"**
-4. Configure:
-   - Name: `Exit Scorecard Access`
-   - Permissions: **Object Read & Write**
-   - Specify bucket: Select your bucket
-5. Click **"Create API Token"**
-6. **IMPORTANT**: Copy and save these values immediately:
-   - Access Key ID
-   - Secret Access Key
-   - Account ID (shown at top of page)
-
-### 3.5 Record Your R2 Details
-
-Save these somewhere safe - you'll need them in Step 5:
-
-```
-CLOUDFLARE_ACCOUNT_ID = [Your Account ID from dashboard URL]
-CLOUDFLARE_R2_ACCESS_KEY_ID = [Access Key ID from step 3.4]
-CLOUDFLARE_R2_SECRET_ACCESS_KEY = [Secret Access Key from step 3.4]
-CLOUDFLARE_R2_BUCKET_NAME = legacy-dna-pdfs (or your bucket name)
-CLOUDFLARE_R2_PUBLIC_URL = https://pub-xxx.r2.dev (from step 3.3)
-```
-
----
-
-## Step 4: Deploy to Netlify
-
-Netlify hosts the website and runs the backend code.
-
-### 4.1 Connect GitHub to Netlify
-
-1. Go to [Netlify](https://app.netlify.com)
+1. Go to [netlify.com](https://netlify.com) and create an account (or sign in)
 2. Click **"Add new site"** → **"Import an existing project"**
-3. Click **"GitHub"**
-4. Authorize Netlify to access your GitHub
-5. Select your `exit-readiness-scorecard` repository
-
-### 4.2 Configure Build Settings
-
-Netlify should auto-detect these, but verify:
-
-| Setting | Value |
-|---------|-------|
-| Branch to deploy | `main` |
-| Build command | `npm install && npm run build` |
-| Publish directory | `build` |
-
-Click **"Deploy site"**
-
-### 4.3 Get Your New Site URL
-
-After deployment (2-3 minutes):
-1. Netlify assigns a random URL like `random-name-123.netlify.app`
-2. You can customize this:
-   - Go to **Site settings** → **Domain management**
-   - Click **"Options"** → **"Edit site name"**
-   - Change to something like `legacydna-scorecard.netlify.app`
+3. Connect your GitHub account and select your `exit-readiness-scorecard` repository
+4. Verify these build settings:
+   - **Build command:** `npm install && npm run build`
+   - **Publish directory:** `build`
+5. Click **Deploy site**
+6. Wait for the build to complete — note your new site URL (e.g., `https://your-site.netlify.app`)
 
 ---
 
-## Step 5: Configure Environment Variables
+## Step 3: Configure Environment Variables
 
-This is the most important step. These secrets connect everything together.
+In Netlify, go to **Site Configuration → Environment Variables** and add these 3 variables:
 
-### 5.1 Open Environment Settings
+| Variable | Value | Where to Find It |
+|---|---|---|
+| `AC_API_URL` | `https://legacydna.api-us1.com` | ActiveCampaign → Settings → Developer |
+| `AC_API_TOKEN` | Your API token | ActiveCampaign → Settings → Developer → API Access |
+| `AC_LIST_ID` | Your list ID (e.g., `17`) | ActiveCampaign → Lists → click your list → look at URL for the ID |
 
-1. In Netlify, go to your site
-2. Click **"Site configuration"** (left sidebar)
-3. Click **"Environment variables"**
-4. Click **"Add a variable"**
+After adding the variables, **trigger a redeploy** (Deploys → Trigger deploy → Deploy site).
 
-### 5.2 Add Each Variable
+---
 
-Add these variables one by one:
+## Step 4: Verify the Health Check
 
-#### ActiveCampaign (Your CRM)
+Visit `https://your-site.netlify.app/.netlify/functions/health` in your browser.
 
-| Key | Value | Description |
-|-----|-------|-------------|
-| `AC_API_URL` | `https://legacydna.api-us1.com` | Your AC API endpoint |
-| `AC_API_TOKEN` | `[Your API Token]` | Get from AC: Settings → Developer |
-| `AC_LIST_ID` | `17` | The list ID for scorecard leads |
+You should see:
+```json
+{ "status": "healthy", "checks": { "activecampaign": "ok" }, "timestamp": "..." }
+```
 
-**To find your ActiveCampaign API Token:**
-1. Log in to ActiveCampaign
-2. Go to Settings → Developer
-3. Copy your API Key
+If ActiveCampaign shows "error", double-check your `AC_API_URL` and `AC_API_TOKEN` values.
 
-#### Cloudflare R2 (PDF Storage)
+---
 
-| Key | Value |
-|-----|-------|
-| `CLOUDFLARE_ACCOUNT_ID` | `[From Step 3.5]` |
-| `CLOUDFLARE_R2_ACCESS_KEY_ID` | `[From Step 3.5]` |
-| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | `[From Step 3.5]` |
-| `CLOUDFLARE_R2_BUCKET_NAME` | `[From Step 3.5]` |
-| `CLOUDFLARE_R2_PUBLIC_URL` | `[From Step 3.5]` |
+## Step 5: Test the Full Flow
 
-### 5.3 Redeploy
-
-After adding all variables:
-1. Go to **Deploys** tab
-2. Click **"Trigger deploy"** → **"Deploy site"**
+1. Open your new site URL
+2. Complete all 10 questions
+3. Enter a **test email address**
+4. Verify in ActiveCampaign:
+   - Contact was created with the test email
+   - Contact was added to your list
+   - Tags `exit-readiness-completed` and `score-XX` were applied
+   - Custom field 20 (score) is populated
+   - Custom field 21 (PDF URL) contains a link
+5. Click the PDF link in field 21 — verify it downloads a valid PDF
 
 ---
 
 ## Step 6: Update Your Website Embed
 
-Update the iframe on your website to point to your new Netlify URL.
+If the scorecard is embedded as an iframe on your website, update the `src` to your new Netlify URL:
 
-### Find and Replace the Embed Code
-
-**Old code (remove this):**
 ```html
 <iframe
-  src="https://exit-readiness-scorecard.netlify.app"
-  ...
-></iframe>
-```
-
-**New code (use this):**
-```html
-<iframe
-  src="https://YOUR-SITE-NAME.netlify.app"
+  src="https://your-site.netlify.app"
   width="100%"
-  height="800"
-  frameborder="0"
-  style="border: none; width: 100%;"
+  style="border: none; min-height: 800px;"
   id="scorecard-iframe"
 ></iframe>
 
 <script>
   window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'resize') {
+    if (event.data && event.data.type === 'scorecard-resize') {
       document.getElementById('scorecard-iframe').style.height = event.data.height + 'px';
     }
   });
 </script>
 ```
 
-Replace `YOUR-SITE-NAME` with your actual Netlify site name.
+---
+
+## Step 7: Set Up ActiveCampaign Automation (Critical)
+
+For follow-up emails to actually be sent, you need an automation in ActiveCampaign:
+
+1. Go to **Automations** → **Create an Automation**
+2. Set the trigger to: **Tag is added** → `exit-readiness-completed`
+3. Add an action: **Send an email**
+4. Design the email (include a link to their PDF using the custom field `%FIELD:21%`)
+5. **Activate the automation**
+
+Without this automation, no follow-up emails will be sent. The scorecard only adds contacts and tags — it does not send emails itself.
 
 ---
 
-## Step 7: Update Google Tag Manager (Optional)
+## Step 8: Set Up Monitoring (Optional but Recommended)
 
-The current GTM container ID is `GTM-MBLCKP3V`. If this is already your container, no changes needed.
+1. Sign up for [UptimeRobot](https://uptimerobot.com/) (free)
+2. Add a new HTTP(s) monitor pointing to: `https://your-site.netlify.app/.netlify/functions/health`
+3. Set check interval to every 5 minutes
+4. Add your email for alerts
 
-If you want to use a different GTM container:
-
-1. Open `public/index.html` in your code
-2. Find `GTM-MBLCKP3V` (appears twice)
-3. Replace with your GTM container ID
-4. Commit and push the change
-5. Netlify will auto-deploy
-
----
-
-## Verification Checklist
-
-After completing all steps, verify everything works:
-
-### Basic Functionality
-- [ ] Visit your Netlify URL directly
-- [ ] Complete the 10-question assessment
-- [ ] Enter an email address
-- [ ] View your results
-- [ ] Download the PDF report
-
-### Integration Tests
-- [ ] Check ActiveCampaign - new contact should appear
-- [ ] Check Cloudflare R2 bucket - PDF should be uploaded
-- [ ] Check your website - iframe should load correctly
-
-### PDF Storage Test
-1. Complete an assessment
-2. Go to Cloudflare R2 → Your bucket
-3. You should see a new PDF file like `LegacyDNA-abc123.pdf`
+This will notify you if your ActiveCampaign integration goes down.
 
 ---
 
 ## Troubleshooting
 
-### "Site failed to deploy"
+| Problem | Solution |
+|---|---|
+| Health check shows AC error | Verify `AC_API_URL` and `AC_API_TOKEN` in Netlify environment variables |
+| Contacts created but no email sent | Check that the ActiveCampaign automation (Step 7) is active |
+| PDF link returns 404 | PDFs are stored in Netlify Blobs — make sure the site is deployed to the same Netlify account |
+| Build fails | Check Netlify deploy logs for errors |
+| Site loads but scorecard is blank | Check browser console (F12) for JavaScript errors |
 
-**Check the build log:**
-1. Go to Deploys in Netlify
-2. Click the failed deploy
-3. Look for red error messages
+---
 
-**Common fixes:**
-- Make sure `package.json` is in the root folder
-- Verify build command is `npm install && npm run build`
+## Custom Domain (Optional)
 
-### "PDF not uploading to R2"
+To use a custom domain like `scorecard.legacy-dna.com`:
 
-**Check environment variables:**
-1. Verify all 5 Cloudflare variables are set
-2. Check for typos in the values
-3. Make sure the bucket name matches exactly
-
-**Check R2 permissions:**
-1. Go to Cloudflare R2 → API Tokens
-2. Verify your token has "Object Read & Write" permission
-
-### "ActiveCampaign not receiving leads"
-
-**Check API credentials:**
-1. Verify `AC_API_URL` includes `https://`
-2. Verify `AC_API_TOKEN` is correct
-3. Test your API key in ActiveCampaign Developer settings
-
-### "Iframe not displaying"
-
-**Check the URL:**
-1. Make sure the Netlify URL is correct
-2. Try visiting the URL directly in a browser
-
-**Check CORS/security:**
-1. Your website must use HTTPS
-2. The iframe URL must use HTTPS
+1. In Netlify, go to **Domain Management** → **Add a custom domain**
+2. Follow Netlify's instructions to update your DNS records
+3. Netlify will automatically provision an SSL certificate
 
 ---
 
 ## Technical Reference
 
-### File Structure
-
-```
-exit-readiness-scorecard/
-├── public/
-│   ├── index.html          ← Google Tag Manager code here
-│   └── legacy-dna-logo.png ← Your logo
-├── src/
-│   ├── ExitReadinessScorecard.jsx  ← Main application
-│   ├── App.js
-│   └── index.js
-├── netlify/
-│   └── functions/
-│       └── submit-scorecard.js  ← Backend (R2 + ActiveCampaign)
-├── netlify.toml            ← Build configuration
-└── package.json            ← Dependencies
-```
-
-### Making Changes to the Scorecard
-
-**To change questions, colors, or text:**
-1. Edit `src/ExitReadinessScorecard.jsx`
-2. Commit and push to GitHub
-3. Netlify auto-deploys changes
-
-**To change the logo:**
-1. Replace `public/legacy-dna-logo.png`
-2. Keep the same filename, or update the reference in the code
-
-### Environment Variables Reference
-
-| Variable | Purpose |
-|----------|---------|
-| `AC_API_URL` | ActiveCampaign API endpoint |
-| `AC_API_TOKEN` | ActiveCampaign authentication |
-| `AC_LIST_ID` | Which list to add contacts to |
-| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account |
-| `CLOUDFLARE_R2_ACCESS_KEY_ID` | R2 authentication |
-| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | R2 authentication |
-| `CLOUDFLARE_R2_BUCKET_NAME` | Which bucket to store PDFs |
-| `CLOUDFLARE_R2_PUBLIC_URL` | Public URL for PDF downloads |
-
----
-
-## Support
-
-If you encounter issues not covered here:
-
-1. Check Netlify build logs for errors
-2. Check browser console (F12) for JavaScript errors
-3. Verify all environment variables are set correctly
-
----
-
-## Summary
-
-After completing this migration, you will own:
-
-- ✅ The source code in your GitHub
-- ✅ The hosting on your Netlify account
-- ✅ The PDF storage in your Cloudflare account
-- ✅ Full control to make changes and updates
-
-The original developer's accounts are no longer needed.
+- **Frontend:** React 18 (Create React App)
+- **Backend:** Netlify Functions (Node.js serverless)
+- **PDF Storage:** Netlify Blobs (built into Netlify, no separate account needed)
+- **CRM Integration:** ActiveCampaign API v3
+- **Analytics:** Google Tag Manager (`GTM-MBLCKP3V`)

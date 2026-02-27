@@ -2,7 +2,7 @@
 
 ## What This Project Is
 
-The **Exit Readiness Scorecard** is a branded React web application built for **Legacy DNA**, a consulting firm that helps healthcare companies prepare for acquisitions/exits. Users complete a 10-question self-assessment across 5 business domains, receive an instant scored report (0–100), and can download a branded PDF. The app also captures leads into ActiveCampaign (CRM) and stores generated PDFs in Cloudflare R2.
+The **Exit Readiness Scorecard** is a branded React web application built for **Legacy DNA**, a consulting firm that helps healthcare companies prepare for acquisitions/exits. Users complete a 10-question self-assessment across 5 business domains, receive an instant scored report (0–100), and can download a branded PDF. The app captures leads into ActiveCampaign (CRM) and stores generated PDFs in Netlify Blobs.
 
 ## Tech Stack
 
@@ -12,7 +12,7 @@ The **Exit Readiness Scorecard** is a branded React web application built for **
 - **Hosting**: Netlify (static site + serverless functions)
 - **Backend**: Netlify Functions (Node.js serverless)
 - **CRM**: ActiveCampaign API (contact sync, list management, tagging)
-- **PDF Storage**: Cloudflare R2 (S3-compatible) — PDFs are uploaded and a public URL is stored on the contact record
+- **PDF Storage**: Netlify Blobs (built into Netlify, no external account needed)
 - **Analytics**: Google Tag Manager (`GTM-MBLCKP3V`) embedded in `public/index.html`
 
 ## Project Structure
@@ -26,15 +26,14 @@ The **Exit Readiness Scorecard** is a branded React web application built for **
 │   ├── index.js                # ReactDOM entry point
 │   ├── index.css               # Global reset styles
 │   ├── App.js                  # Root component, renders ExitReadinessScorecard
-│   ├── ExitReadinessScorecard.jsx  # Main component (all UI + logic)
-│   ├── ExitReadinessScorecard-OLD.jsx   # Legacy version (unused)
-│   ├── ExitReadinessScorecard-OLD2.jsx  # Legacy version (unused)
-│   └── ExitReadinessScorecard-REVISED.jsx  # Legacy version (unused)
+│   └── ExitReadinessScorecard.jsx  # Main component (all UI + logic)
 ├── netlify/
 │   └── functions/
-│       ├── submit-scorecard.js    # Active serverless function (R2 upload + AC sync)
+│       ├── submit-scorecard.js    # Lead capture (Blobs upload + AC sync)
+│       ├── serve-pdf.js           # Serves stored PDFs from Blobs
+│       ├── health.js              # Health check endpoint (tests AC connectivity)
+│       ├── log-error.js           # Frontend error logging endpoint
 │       └── package.json           # Dependencies for Netlify functions
-├── submit-scorecard-fetch-version.js  # Alternative function using native fetch (reference)
 ├── netlify.toml                # Netlify build config
 ├── package.json                # Frontend dependencies & scripts
 └── package-lock.json
@@ -65,17 +64,28 @@ npm test           # Run tests (CRA default — minimal tests exist)
 
 ### Scoring
 
-Each question is scored 1–5. Domain scores are the average of 2 questions, scaled to 0–20 (each domain worth 20 points). Overall score = sum of all 5 domain scores (0–100). The scoring logic lives in the `getAnalysis()` function inside `ExitReadinessScorecard.jsx`.
+Each question is scored 1–5. The overall score uses a normalized formula: `((total - 10) / 40) * 90 + 10`, producing a 10–100 range. The scoring logic lives in the `getAnalysis()` and `calculateScore()` functions inside `ExitReadinessScorecard.jsx`.
 
 ### Lead Capture Flow
 
 When the user transitions to `fullResults`:
-1. A `useEffect` fires automatically after 1 second
+1. A `useEffect` fires automatically after 1 second (with proper cleanup to prevent race conditions)
 2. `generatePDFBlob()` creates a PDF from the rendered results HTML
 3. The PDF is converted to base64
 4. A POST request is sent to `/.netlify/functions/submit-scorecard` with: `{ email, overallScore, pdfBase64 }`
-5. The Netlify function uploads the PDF to Cloudflare R2, then syncs the contact to ActiveCampaign (creates/updates contact, adds to list, applies tags)
-6. `sessionStorage` prevents duplicate submissions in the same session
+5. The Netlify function uploads the PDF to Netlify Blobs, then syncs the contact to ActiveCampaign (creates/updates contact, adds to list, applies tags)
+6. `sessionStorage` prevents duplicate submissions — only set on confirmed success
+7. On failure: user sees an error overlay with retry option (max 3 attempts)
+
+### Backend Error Handling
+
+The `submit-scorecard` function:
+- Uses `AbortController` with 8-second timeouts on all fetch calls
+- Retries failed API calls (2 attempts with 1s backoff)
+- Validates all API responses (list addition, tag creation, tag application)
+- Returns structured responses with `submissionId` for log correlation
+- **List addition failure is a hard error** (ensures email automations trigger)
+- Tag failures are tracked as warnings but don't block the response
 
 ### PDF Generation
 
@@ -84,11 +94,18 @@ Uses `html2pdf.js` which renders the results DOM to canvas then to PDF. The `gen
 - Removes elements marked with `data-pdf-exclude`
 - Generates a letter-format portrait PDF
 
-The same function is used for both the user-facing download button and the backend submission.
-
 ### Iframe Embedding
 
 The app supports being embedded in an iframe. A `useEffect` sends `postMessage` events (`scorecard-resize`) to the parent window with the document height so the parent can resize the iframe dynamically.
+
+## Serverless Functions
+
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/.netlify/functions/submit-scorecard` | POST | Stores PDF in Blobs, syncs contact to ActiveCampaign |
+| `/.netlify/functions/serve-pdf?id=<key>` | GET | Serves a stored PDF by filename |
+| `/.netlify/functions/health` | GET | Tests ActiveCampaign connectivity |
+| `/.netlify/functions/log-error` | POST | Logs frontend errors for debugging |
 
 ## Environment Variables (Netlify Functions)
 
@@ -99,11 +116,6 @@ These are configured in Netlify's environment settings, not in the repo:
 | `AC_API_URL` | ActiveCampaign API base URL |
 | `AC_API_TOKEN` | ActiveCampaign API token |
 | `AC_LIST_ID` | ActiveCampaign list ID to add contacts to |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account for R2 |
-| `CLOUDFLARE_R2_ACCESS_KEY_ID` | R2 access key |
-| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | R2 secret key |
-| `CLOUDFLARE_R2_BUCKET_NAME` | R2 bucket name |
-| `CLOUDFLARE_R2_PUBLIC_URL` | Public URL prefix for uploaded PDFs |
 
 ## Brand Colors
 
@@ -123,4 +135,4 @@ These are configured in Netlify's environment settings, not in the repo:
 - **No state management library**: All state is local `useState` in the single component.
 - **Inline styles**: CSS is applied via inline style objects, not CSS modules or external stylesheets.
 - **No test coverage**: The project has no meaningful test files beyond CRA defaults.
-- **Legacy files**: `*-OLD.jsx`, `*-OLD2.jsx`, and `*-REVISED.jsx` in `src/` are unused prior versions kept for reference.
+- **Email validation**: Uses regex validation (`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`) for the email capture field.

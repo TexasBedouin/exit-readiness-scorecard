@@ -4,33 +4,22 @@ Use this checklist alongside the full [MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md)
 
 ---
 
-## Accounts Needed (All Free Tier)
+## Accounts Needed
 
-- [ ] GitHub account - [github.com/signup](https://github.com/signup)
-- [ ] Netlify account - [netlify.com](https://netlify.com)
-- [ ] Cloudflare account - [cloudflare.com](https://cloudflare.com)
+- [ ] GitHub account — [github.com/signup](https://github.com/signup)
+- [ ] Netlify account — [netlify.com](https://netlify.com)
+
+_(ActiveCampaign and Google Tag Manager are already yours — no changes needed)_
 
 ---
 
 ## Migration Steps
 
 ### 1. Source Code
-- [ ] Download ZIP from current GitHub repo
 - [ ] Create new private repo in your GitHub
-- [ ] Upload all files to your new repo
+- [ ] Upload all project files
 
-### 2. Cloudflare R2 (PDF Storage)
-- [ ] Create R2 bucket named `legacy-dna-pdfs`
-- [ ] Enable public access (R2.dev subdomain)
-- [ ] Create API token with Read/Write permissions
-- [ ] Save these credentials:
-  - Account ID: `_______________`
-  - Access Key ID: `_______________`
-  - Secret Access Key: `_______________`
-  - Bucket Name: `_______________`
-  - Public URL: `_______________`
-
-### 3. Netlify Deployment
+### 2. Netlify Deployment
 - [ ] Connect GitHub repo to Netlify
 - [ ] Verify build settings:
   - Build command: `npm install && npm run build`
@@ -38,51 +27,35 @@ Use this checklist alongside the full [MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md)
 - [ ] Deploy site
 - [ ] Note your new site URL: `_______________`
 
-### 4. Environment Variables (in Netlify)
-Add these 8 variables in Site Configuration → Environment Variables:
+### 3. Environment Variables (in Netlify)
+Add these 3 variables in **Site Configuration > Environment Variables**:
 
-**ActiveCampaign:**
 - [ ] `AC_API_URL` = `https://legacydna.api-us1.com`
-- [ ] `AC_API_TOKEN` = (from AC Settings → Developer)
-- [ ] `AC_LIST_ID` = `17`
+- [ ] `AC_API_TOKEN` = _(from ActiveCampaign > Settings > Developer)_
+- [ ] `AC_LIST_ID` = _(your list ID)_
 
-**Cloudflare R2:**
-- [ ] `CLOUDFLARE_ACCOUNT_ID` = (from step 2)
-- [ ] `CLOUDFLARE_R2_ACCESS_KEY_ID` = (from step 2)
-- [ ] `CLOUDFLARE_R2_SECRET_ACCESS_KEY` = (from step 2)
-- [ ] `CLOUDFLARE_R2_BUCKET_NAME` = (from step 2)
-- [ ] `CLOUDFLARE_R2_PUBLIC_URL` = (from step 2)
+### 4. Verify
+- [ ] Health check returns "healthy": `https://YOUR-SITE.netlify.app/.netlify/functions/health`
+- [ ] Complete a test assessment with a test email
+- [ ] Verify contact appears in ActiveCampaign with correct score and tags
+- [ ] Verify PDF link in custom field 21 works
+- [ ] Verify follow-up email is received (requires AC automation — see Step 7 in guide)
 
-### 5. Redeploy
-- [ ] Trigger new deploy in Netlify after adding env vars
+### 5. Update Your Website
+- [ ] Update iframe `src` to your new Netlify URL
+- [ ] Test the embedded version works correctly
 
-### 6. Update Website
-- [ ] Replace iframe URL on your website with new Netlify URL
+### 6. ActiveCampaign Automation (CRITICAL)
+- [ ] Create automation: Tag `exit-readiness-completed` is added → Send email
+- [ ] Include PDF link using `%FIELD:21%` in the email template
+- [ ] Activate the automation
 
----
-
-## Verification Tests
-
-- [ ] Complete a test assessment on new URL
-- [ ] Verify PDF downloads correctly
-- [ ] Check new contact appears in ActiveCampaign
-- [ ] Check PDF file appears in Cloudflare R2 bucket
-- [ ] Verify iframe works on your website
+### 7. Monitoring (Optional)
+- [ ] Set up UptimeRobot to monitor the health endpoint
+- [ ] Configure email alerts
 
 ---
 
-## What You'll Own After Migration
+## Done!
 
-| Asset | Your Account |
-|-------|-------------|
-| Source code | Your GitHub |
-| Website hosting | Your Netlify |
-| PDF storage | Your Cloudflare |
-| CRM data | Your ActiveCampaign (already yours) |
-| Analytics | Your GTM (already yours) |
-
----
-
-## Need Help?
-
-See the detailed [MIGRATION-GUIDE.md](./MIGRATION-GUIDE.md) for step-by-step instructions with screenshots descriptions.
+Once all items are checked, you have full ownership of the application. The old deployment can be shut down.
